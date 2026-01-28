@@ -12,6 +12,16 @@ Production-ready agents, skills, hooks, commands, rules, and MCP configurations 
 
 ---
 
+## Codex Mode (Local Refactor)
+
+This working copy is being refactored for Codex-first usage:
+
+- Project instructions: `AGENTS.md`
+- Codex skills live in: `.codex/skills/`
+- The original Claude Code plugin layout is kept as legacy reference material.
+
+---
+
 ## The Guides
 
 This repo is the raw code only. The guides explain everything.
@@ -102,7 +112,7 @@ everything-claude-code/
 |   |-- refactor-cleaner.md  # Dead code cleanup
 |   |-- doc-updater.md       # Documentation sync
 |
-|-- skills/           # Workflow definitions and domain knowledge
+|-- .codex/skills/    # Codex skills (refactor target)
 |   |-- coding-standards/           # Language best practices
 |   |-- backend-patterns/           # API, database, caching patterns
 |   |-- frontend-patterns/          # React, Next.js patterns

@@ -23,5 +23,5 @@
     "best-practices"
   ],
   "commands": "./commands",
-  "skills": "./skills"
+  "skills": "./.codex/skills"
 }
