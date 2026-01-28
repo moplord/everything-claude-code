@@ -1,0 +1,64 @@
+# Codex execution policy rules (repo-local)
+#
+# These rules apply ONLY when Codex requests to run a command outside the sandbox.
+# The strictest matching decision wins: forbidden > prompt > allow.
+#
+# Keep this file focused on high-risk operations that should never (or rarely)
+# run without explicit human intent.
+
+# Block disk / system destructive tools.
+prefix_rule(
+    pattern = ["dd"],
+    decision = "forbidden",
+    match = ["dd if=/dev/zero of=/dev/sda bs=1M count=10"],
+)
+
+prefix_rule(
+    pattern = [["mkfs", "mkfs.ext4", "mkfs.xfs", "mkfs.btrfs"]],
+    decision = "forbidden",
+    match = ["mkfs.ext4 /dev/sda1"],
+)
+
+prefix_rule(
+    pattern = [["diskpart", "format"]],
+    decision = "forbidden",
+    match = ["diskpart", "format C:"],
+)
+
+prefix_rule(
+    pattern = [["shutdown", "reboot", "poweroff"]],
+    decision = "forbidden",
+    match = ["shutdown -h now", "reboot"],
+)
+
+# Block common "wipe the machine" rm patterns.
+prefix_rule(
+    pattern = ["rm", "-rf", "/"],
+    decision = "forbidden",
+    match = ["rm -rf /"],
+)
+prefix_rule(
+    pattern = ["rm", "-rf", "~"],
+    decision = "forbidden",
+    match = ["rm -rf ~"],
+)
+
+# Highly destructive git operations: require explicit confirmation.
+prefix_rule(
+    pattern = ["git", "reset", "--hard"],
+    decision = "prompt",
+    match = ["git reset --hard HEAD"],
+)
+
+prefix_rule(
+    pattern = ["git", "clean", "-fdx"],
+    decision = "prompt",
+    match = ["git clean -fdx"],
+)
+
+prefix_rule(
+    pattern = ["git", "branch", ["-d", "-D"]],
+    decision = "prompt",
+    match = ["git branch -D wip/foo"],
+)
+

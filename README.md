@@ -17,6 +17,7 @@ Run Codex from this repository root. Codex automatically discovers project skill
 This repo also includes a repo-local Team Config at:
 
 - `.codex/config.toml`
+ - `.codex/rules/` (execution policy rules for commands that run outside the sandbox)
 
 Then invoke skills explicitly (recommended) in your request, e.g.:
 

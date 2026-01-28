@@ -1,0 +1,57 @@
+# Commands that commonly change remote state or require network access.
+# For repo-local development we keep these as "prompt" so Codex can suggest them
+# but you always confirm the escalation outside the sandbox.
+
+# Git network ops
+prefix_rule(
+    pattern = ["git", ["push", "fetch", "pull", "clone"]],
+    decision = "prompt",
+    match = ["git push", "git fetch --all", "git pull", "git clone https://example.com/repo.git"],
+    not_match = ["git status", "git diff"],
+)
+
+prefix_rule(
+    pattern = ["git", "submodule", ["update", "sync"]],
+    decision = "prompt",
+    match = ["git submodule update --init --recursive"],
+)
+
+# Package managers (dependency download, publishing)
+prefix_rule(
+    pattern = [["npm", "pnpm", "yarn"]],
+    decision = "prompt",
+    match = ["npm install", "pnpm install", "yarn install"],
+)
+
+prefix_rule(
+    pattern = [["pip", "pip3", "poetry"]],
+    decision = "prompt",
+    match = ["pip install requests", "poetry install"],
+)
+
+prefix_rule(
+    pattern = [["mvn", "mvnw", "gradle", "gradlew"]],
+    decision = "prompt",
+    match = ["mvn -q test", "gradle test"],
+)
+
+# Containers / orchestration (often remote/authenticated)
+prefix_rule(
+    pattern = ["docker", ["login", "logout", "pull", "push"]],
+    decision = "prompt",
+    match = ["docker pull alpine:latest", "docker push myrepo/app:tag"],
+)
+
+prefix_rule(
+    pattern = [["kubectl", "helm"]],
+    decision = "prompt",
+    match = ["kubectl apply -f k8s.yaml", "helm upgrade --install app chart/"],
+)
+
+# GitHub/GitLab CLIs (remote state)
+prefix_rule(
+    pattern = [["gh", "glab"]],
+    decision = "prompt",
+    match = ["gh pr create", "glab issue create"],
+)
+

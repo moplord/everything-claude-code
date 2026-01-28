@@ -1,0 +1,17 @@
+# Allow a small set of read-only commands without prompting.
+# These rules are intentionally conservative; everything else can still run in
+# the sandbox, or will be prompted if Codex requests an escalation.
+
+prefix_rule(
+    pattern = ["git", ["status", "diff", "log", "show", "blame", "rev-parse", "ls-files"]],
+    decision = "allow",
+    match = ["git status", "git diff", "git log -n 5", "git show HEAD", "git ls-files"],
+    not_match = ["git push", "git commit", "git reset --hard"],
+)
+
+prefix_rule(
+    pattern = ["rg"],
+    decision = "allow",
+    match = ["rg -n \"TODO\" ."],
+)
+
