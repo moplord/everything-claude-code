@@ -57,3 +57,36 @@ sandbox_mode = "read-only"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 
+################################################################################
+# MCP servers (repo-local)
+#
+# Note: project-scoped MCP config is applied only for trusted projects.
+# Prefer env-based secrets (env_http_headers / bearer_token_env_var) so you never
+# commit API keys to git.
+################################################################################
+
+[mcp_servers.chrome-devtools]
+command = "cmd"
+args = [
+    "/c",
+    "npx",
+    "-y",
+    "chrome-devtools-mcp@latest",
+]
+env = { SystemRoot = "C:\\Windows", PROGRAMFILES = "C:\\Program Files" }
+startup_timeout_sec = 60
+
+[mcp_servers.context7]
+url = "https://mcp.context7.com/mcp"
+# Set this in your environment (do not commit keys in git):
+# - Windows PowerShell: $env:CONTEXT7_API_KEY="..."
+env_http_headers = { "CONTEXT7_API_KEY" = "CONTEXT7_API_KEY" }
+
+[mcp_servers.semgrep]
+url = "https://mcp.semgrep.ai/mcp"
+
+[mcp_servers.ppt]
+command = "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"
+args = [
+    "C:\\Users\\admin\\AppData\\Local\\mcp\\Office-PowerPoint-MCP-Server\\ppt_mcp_server.py",
+]
