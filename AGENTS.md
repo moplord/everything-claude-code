@@ -29,8 +29,13 @@ Explicitly reference skills when you want a specific workflow, for example:
 - `$tdd-workflow`
 - `$security-review`
 - `$verification-loop`
+- `$requirements-elicitation`
+- `$requirements-authoring`
+- `$requirements-audit`
 
 ## Scope Guardrail
 
-Do not add new "requirements/JDL" automation unless explicitly requested. This repo will gain a
-requirements authoring workflow later, but not during the current Codex refactor phase.
+Requirements authoring workflows are allowed when explicitly requested.
+Maintain strict separation:
+- Requirements: authoritative intent + acceptance (what/why)
+- JDL: downstream artifact (how-to-generate), introduced only when asked
