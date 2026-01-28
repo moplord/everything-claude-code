@@ -34,10 +34,3 @@ Explicitly reference skills when you want a specific workflow, for example:
 
 Do not add new "requirements/JDL" automation unless explicitly requested. This repo will gain a
 requirements authoring workflow later, but not during the current Codex refactor phase.
-
-## Requirements Docs
-
-The requirements documentation system lives under:
-- `docs/requirements/`
-
-Requirements are authoritative; JDL is a downstream artifact and must remain separate.
