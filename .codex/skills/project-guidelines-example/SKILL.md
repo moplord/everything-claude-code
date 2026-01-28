@@ -1,3 +1,8 @@
+---
+name: project-guidelines-example
+description: Example of a project-specific guidelines skill (architecture, structure, patterns, testing, deployment). Use as a template for your own projects.
+---
+
 # Project Guidelines Skill (Example)
 
 This is an example of a project-specific skill. Use this as a template for your own projects.
@@ -144,39 +149,39 @@ async function fetchApi<T>(
 }
 ```
 
-### Claude AI Integration (Structured Output)
+### LLM Integration (Structured Output)
+
+When calling an LLM, require machine-parseable output and validate it at the boundary.
+Keep the model/API details behind a small adapter so business logic stays deterministic.
 
 ```python
-from anthropic import Anthropic
-from pydantic import BaseModel
+import json
+from pydantic import BaseModel, ValidationError
 
 class AnalysisResult(BaseModel):
     summary: str
     key_points: list[str]
     confidence: float
 
-async def analyze_with_claude(content: str) -> AnalysisResult:
-    client = Anthropic()
+def call_llm_json(prompt: str) -> str:
+    # Adapter boundary: implement with your chosen model/provider.
+    # Must return ONLY a JSON string matching AnalysisResult.
+    raise NotImplementedError
 
-    response = client.messages.create(
-        model="claude-sonnet-4-5-20250514",
-        max_tokens=1024,
-        messages=[{"role": "user", "content": content}],
-        tools=[{
-            "name": "provide_analysis",
-            "description": "Provide structured analysis",
-            "input_schema": AnalysisResult.model_json_schema()
-        }],
-        tool_choice={"type": "tool", "name": "provide_analysis"}
+def analyze(content: str) -> AnalysisResult:
+    prompt = (
+        "Return ONLY valid JSON with keys: summary (string), "
+        "key_points (array of strings), confidence (number 0..1).\\n\\n"
+        f"Content:\\n{content}"
     )
 
-    # Extract tool use result
-    tool_use = next(
-        block for block in response.content
-        if block.type == "tool_use"
-    )
-
-    return AnalysisResult(**tool_use.input)
+    raw = call_llm_json(prompt)
+    try:
+        # Pydantic validates schema + types; it will raise on missing/extra/invalid fields.
+        return AnalysisResult.model_validate(json.loads(raw))
+    except (json.JSONDecodeError, ValidationError) as e:
+        # In production: retry with a repair prompt or fall back to a safe default path.
+        raise ValueError(f\"LLM output failed validation: {e}\") from e
 ```
 
 ### Custom Hooks (React)

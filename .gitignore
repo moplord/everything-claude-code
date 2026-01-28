@@ -27,3 +27,4 @@ private/
 
 # Session templates (not committed)
 examples/sessions/*.tmp
+legacy/**/examples/sessions/*.tmp

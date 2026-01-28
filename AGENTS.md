@@ -1,32 +1,36 @@
 # Codex Project Instructions
 
-This repository is organized for Codex-first usage.
+This repository is Codex-first.
 
-## What This Repo Contains
+## Entry Points
 
-- Codex skills: `.codex/skills/*`
-- Legacy reference material (original Claude Code plugin content): `agents/`, `commands/`, `hooks/`, `rules/`, `.claude-plugin/`
+- Project instructions: `AGENTS.md` (this file)
+- Project skills: `.codex/skills/`
 
-## How To Work In This Repo
+Legacy Claude Code plugin materials are preserved under `legacy/claude-code/` and are not used by Codex.
+
+## Working Style
 
 - Prefer `rg` for searching and `rg --files` for listing files.
-- Make changes incrementally and keep diffs small.
-- Do not introduce non-ASCII characters unless the file already contains them.
+- Keep diffs small and scoped; avoid drive-by refactors.
+- Default to ASCII; only keep non-ASCII if the file already uses it.
 
-## Default Quality Bar
+## Quality Bar (Always On)
 
-- Immutability: do not mutate input objects/arrays; return new values.
-- Error handling: handle errors explicitly; do not swallow failures silently.
-- Testing: write or update tests when behavior changes; keep coverage expectations high.
-- Logging: avoid `console.log` in production code paths; use structured logging when needed.
+- Immutability: do not mutate inputs; return new values.
+- Error handling: handle failures explicitly; no silent catch-and-ignore.
+- Testing: update/add tests when behavior changes.
+- Logging: avoid `console.log` in production paths.
 
-## How To Use Skills In Codex
+## Using Skills
 
-- Use the Codex skills in `.codex/skills/*` by explicitly referencing them in your request
-  (e.g. "$tdd-workflow", "$security-review", "$verification-loop") or by selecting them in Codex.
+Explicitly reference skills when you want a specific workflow, for example:
 
-## Notes
+- `$tdd-workflow`
+- `$security-review`
+- `$verification-loop`
 
-- Do not add new "requirements/JDL" automation unless explicitly requested. This repo will later gain
-  a requirements authoring workflow, but not in the current refactor phase.
+## Scope Guardrail
 
+Do not add new "requirements/JDL" automation unless explicitly requested. This repo will gain a
+requirements authoring workflow later, but not during the current Codex refactor phase.
