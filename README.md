@@ -14,6 +14,10 @@ Run Codex from this repository root. Codex automatically discovers project skill
 
 - `.codex/skills/`
 
+This repo also includes a repo-local Team Config at:
+
+- `.codex/config.toml`
+
 Then invoke skills explicitly (recommended) in your request, e.g.:
 
 - `$tdd-workflow`
@@ -37,4 +41,3 @@ If you want these skills available across projects, copy `.codex/skills/*` into 
 |-- legacy/
 |   |-- claude-code/   # Not used by Codex, kept for reference
 ```
-

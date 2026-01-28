@@ -1,0 +1,59 @@
+################################################################################
+# Codex Team Config (repo-local)
+#
+# This file is checked into git and provides shared defaults when working in this
+# repository. You can still override settings via CLI flags or your personal
+# `~/.codex/config.toml`.
+#
+# Note: project-scoped `.codex/config.toml` is applied only after the project is
+# marked trusted by the user (Codex will prompt / or you can set trust in your
+# personal config). See Team Config + Security docs.
+################################################################################
+
+################################################################################
+# Approval & Sandbox
+################################################################################
+
+# When to ask for command approval:
+# - untrusted: only known-safe read-only commands auto-run; others prompt
+# - on-failure: auto-run in sandbox; prompt only on failure for escalation
+# - on-request: model decides when to ask (common default)
+# - never: never prompt (risky)
+approval_policy = "on-request"
+
+# Filesystem/network sandbox policy for tool calls:
+# - read-only
+# - workspace-write
+# - danger-full-access (no sandbox; extremely risky)
+sandbox_mode = "workspace-write"
+
+# Extra settings used only when sandbox_mode = "workspace-write".
+[sandbox_workspace_write]
+writable_roots = []
+network_access = false
+exclude_tmpdir_env_var = false
+exclude_slash_tmp = false
+
+################################################################################
+# Feature Flags
+################################################################################
+
+[features]
+# Allow the model to request web searches (disabled by default for safety).
+web_search_request = false
+
+################################################################################
+# Profiles (named presets)
+#
+# Profiles are selected via: `codex --profile <name>`
+# Note: profiles are not currently supported in the Codex IDE extension.
+################################################################################
+
+[profiles.readonly]
+approval_policy = "untrusted"
+sandbox_mode = "read-only"
+
+[profiles.full-auto]
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
