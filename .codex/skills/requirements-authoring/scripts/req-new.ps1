@@ -6,17 +6,22 @@ param(
   [string]$Title,
 
   [Parameter(Mandatory = $false)]
-  [string]$Owner = "team"
+  [string]$Owner = "team",
+
+  [Parameter(Mandatory = $false)]
+  [string]$Locale = "en-US"
 )
 
 $ErrorActionPreference = "Stop"
 
 function Sanitize-Slug {
   param([string]$s)
-  $slug = $s.ToLowerInvariant()
-  $slug = $slug -replace "[^a-z0-9]+", "-"
-  $slug = $slug -replace "^-+", ""
-  $slug = $slug -replace "-+$", ""
+  $slug = $s.Trim()
+  # Remove Windows-forbidden filename characters, keep Unicode letters/digits.
+  $slug = $slug -replace '[\\/:*?"<>|]', ''
+  $slug = $slug -replace '\s+', '-'
+  $slug = $slug -replace '-{2,}', '-'
+  $slug = $slug.Trim("-")
   if ($slug.Length -eq 0) { $slug = "untitled" }
   return $slug
 }
@@ -41,6 +46,14 @@ if (!(Test-Path $root)) {
 }
 
 $template = Join-Path $root "templates\\REQ-TEMPLATE.md"
+if ($Locale -and ($Locale.ToLowerInvariant() -ne "en-us")) {
+  $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+  $assetsRoot = Join-Path $scriptDir "..\\assets\\requirements"
+  $localeRoot = Join-Path $assetsRoot $Locale
+  if (Test-Path $localeRoot) {
+    $template = Join-Path $localeRoot "templates\\REQ-TEMPLATE.md"
+  }
+}
 if (!(Test-Path $template)) {
   throw "Missing template: $template"
 }
@@ -55,12 +68,12 @@ if (Test-Path $outPath) {
 }
 
 $today = Get-Date -Format "yyyy-MM-dd"
-$content = Get-Content -Raw $template
-$content = $content -replace "REQ-XXX", $id
-$content = $content -replace "<Short Title>", $Title
-$content = $content -replace "Owner: <name/team>", ("Owner: " + $Owner)
-$content = $content -replace "Last Updated: YYYY-MM-DD", ("Last Updated: " + $today)
-$content = $content -replace "v0\\.1\\.0", "v0.1.0"
+$content = Get-Content -Raw -Encoding UTF8 $template
+$content = $content -replace 'REQ-XXX', $id
+$content = $content -replace '<Short Title>', $Title
+$content = $content -replace 'Owner: <name/team>', ("Owner: " + $Owner)
+$content = $content -replace 'Last Updated: YYYY-MM-DD', ("Last Updated: " + $today)
+$content = $content -replace 'v0\.1\.0', 'v0.1.0'
 
 Set-Content -NoNewline -Encoding UTF8 -Path $outPath -Value $content
 
@@ -69,4 +82,3 @@ Write-Host "Next:"
 Write-Host "- Fill out the REQ sections."
 Write-Host "- Create acceptance checklist in ACCEPTANCE/."
 Write-Host "- Update INDEX.md and CHANGELOG.md."
-

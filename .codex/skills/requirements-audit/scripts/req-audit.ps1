@@ -43,11 +43,28 @@ function Contains-SectionHeader {
   return [regex]::IsMatch($text, $re)
 }
 
+function Contains-SectionNumberHeader {
+  param(
+    [string]$text,
+    [string]$number
+  )
+  # match markdown header like: "## 4." or "## 12."
+  $re = "(?m)^##\\s+" + [regex]::Escape($number) + "\\."
+  return [regex]::IsMatch($text, $re)
+}
+
 function Get-FrontMatterLikeField {
-  param([string]$text, [string]$field)
-  $re = "(?m)^" + [regex]::Escape($field) + "\\s*:\\s*(.+)$"
-  $m = [regex]::Match($text, $re)
-  if ($m.Success) { return $m.Groups[1].Value.Trim() }
+  param([string]$text, [string[]]$fields)
+  $lines = $text -split "`n"
+  foreach ($line in $lines) {
+    foreach ($field in $fields) {
+      $fieldEsc = [regex]::Escape($field)
+      $re = '^(?:\uFEFF)?\s*' + $fieldEsc + '\s*[:\uFF1A]\s*(.+)$'
+      if ($line -match $re) {
+        return $Matches[1].Trim()
+      }
+    }
+  }
   return $null
 }
 
@@ -105,27 +122,33 @@ Require-File (Join-Path $root "templates\\ACCEPTANCE-TEMPLATE.md") | Out-Null
 
 $indexPath = Join-Path $root "INDEX.md"
 $indexText = ""
-if (Test-Path $indexPath) { $indexText = Get-Content -Raw $indexPath }
+if (Test-Path $indexPath) { $indexText = Get-Content -Raw -Encoding UTF8 $indexPath }
 
 $reqFiles = Get-ReqFiles -root $root
 foreach ($f in $reqFiles) {
   $p = $f.FullName
-  $t = Get-Content -Raw $p
+  $t = Get-Content -Raw -Encoding UTF8 $p
 
-  $status = Get-FrontMatterLikeField -text $t -field "Status"
-  $version = Get-FrontMatterLikeField -text $t -field "Version"
-  $owner = Get-FrontMatterLikeField -text $t -field "Owner"
-  $updated = Get-FrontMatterLikeField -text $t -field "Last Updated"
+  $status = Get-FrontMatterLikeField -text $t -fields @("Status", "\u72b6\u6001")
+  $version = Get-FrontMatterLikeField -text $t -fields @("Version", "\u7248\u672c")
+  $owner = Get-FrontMatterLikeField -text $t -fields @("Owner", "\u8d1f\u8d23\u4eba")
+  $updated = Get-FrontMatterLikeField -text $t -fields @("Last Updated", "\u6700\u540e\u66f4\u65b0")
 
   if (!$status) { Add-Issue -Severity "ERROR" -Path $p -Message "Missing 'Status:' line" }
   if (!$version) { Add-Issue -Severity "ERROR" -Path $p -Message "Missing 'Version:' line" }
   if (!$owner) { Add-Issue -Severity "ERROR" -Path $p -Message "Missing 'Owner:' line" }
   if (!$updated) { Add-Issue -Severity "ERROR" -Path $p -Message "Missing 'Last Updated:' line" }
 
-  if (-not (Contains-SectionHeader -text $t -header "Non-Goals")) {
+  $hasNonGoals = ($t -match '(?m)^##\s+4\.') `
+    -or ($t -match '(?m)^##\s+.*Non-Goals') `
+    -or ($t -match '(?m)^##\s+.*\u975e\u76ee\u6807')
+  if (-not $hasNonGoals) {
     Add-Issue -Severity "ERROR" -Path $p -Message "Missing 'Non-Goals' section"
   }
-  if (-not (Contains-SectionHeader -text $t -header "Acceptance Criteria")) {
+  $hasAcceptance = ($t -match '(?m)^##\s+12\.') `
+    -or ($t -match '(?m)^##\s+.*Acceptance Criteria') `
+    -or ($t -match '(?m)^##\s+.*\u9a8c\u6536\u6807\u51c6')
+  if (-not $hasAcceptance) {
     Add-Issue -Severity "ERROR" -Path $p -Message "Missing 'Acceptance Criteria' section"
   }
 
@@ -173,4 +196,3 @@ if ($warns.Count -gt 0) {
 
 if ($errors.Count -gt 0) { exit 2 }
 exit 0
-

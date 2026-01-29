@@ -17,6 +17,7 @@ Important:
 ## Where Requirements Live (Target Repo)
 
 Default root folder (configurable): `requirements/`
+Default locale: `en-US` (supports `zh-CN`)
 
 Layout:
 ```
@@ -40,7 +41,7 @@ requirements/
 From the target repo root, run:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File "<path-to-skill>/scripts/req-init.ps1" -RootPath requirements
+powershell -ExecutionPolicy Bypass -File "<path-to-skill>/scripts/req-init.ps1" -RootPath requirements -Locale zh-CN
 ```
 
 This creates the folder structure + baseline files using the templates bundled in this skill.
@@ -56,7 +57,7 @@ Require one of:
 ### Step 1: Create a New REQ File
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File "<path-to-skill>/scripts/req-new.ps1" -RootPath requirements -Title "short title"
+powershell -ExecutionPolicy Bypass -File "<path-to-skill>/scripts/req-new.ps1" -RootPath requirements -Title "short title" -Locale zh-CN
 ```
 
 Rules:
@@ -107,4 +108,3 @@ Rule:
 
 Before treating a REQ as approved, run `$requirements-audit` (or execute its script) to
 ensure the document set is consistent and enforceable.
-

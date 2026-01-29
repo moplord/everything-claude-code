@@ -9,6 +9,9 @@ This skill turns an unstructured conversation into a structured "elicitation pac
 It does NOT write generator-specific artifacts (e.g., JDL) and does NOT finalize an
 authoritative requirement. Its job is to reduce ambiguity and surface unknowns.
 
+Language:
+- Produce the packet in the user's requested language (e.g., Chinese) unless told otherwise.
+
 ## Output Contract (What You Produce)
 
 Produce a single Markdown section titled `Elicitation Packet` containing:
@@ -80,4 +83,3 @@ Write the packet in a compact, structured format. Keep it implementation-agnosti
 Once the elicitation packet is accepted, use `$requirements-authoring` to turn it
 into an authoritative REQ + acceptance checklist + changelog/index updates in the
 target project repository.
-

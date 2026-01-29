@@ -3,6 +3,9 @@ param(
   [string]$RootPath = "requirements",
 
   [Parameter(Mandatory = $false)]
+  [string]$Locale = "en-US",
+
+  [Parameter(Mandatory = $false)]
   [switch]$Force
 )
 
@@ -29,7 +32,11 @@ function Copy-FileSafe {
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $assetsRoot = Join-Path $scriptDir "..\\assets\\requirements"
-$assetsRoot = (Resolve-Path $assetsRoot).Path
+$localeRoot = $assetsRoot
+if ($Locale -and ($Locale.ToLowerInvariant() -ne "en-us")) {
+  $localeRoot = Join-Path $assetsRoot $Locale
+}
+$localeRoot = (Resolve-Path $localeRoot).Path
 
 $root = Join-Path (Get-Location) $RootPath
 
@@ -39,15 +46,14 @@ New-Item -ItemType Directory -Force -Path (Join-Path $root "CONVERSATIONS") | Ou
 New-Item -ItemType Directory -Force -Path (Join-Path $root "DECISIONS") | Out-Null
 New-Item -ItemType Directory -Force -Path (Join-Path $root "ACCEPTANCE") | Out-Null
 
-Copy-FileSafe -From (Join-Path $assetsRoot "README.md") -To (Join-Path $root "README.md")
-Copy-FileSafe -From (Join-Path $assetsRoot "INDEX.md") -To (Join-Path $root "INDEX.md")
-Copy-FileSafe -From (Join-Path $assetsRoot "CHANGELOG.md") -To (Join-Path $root "CHANGELOG.md")
+Copy-FileSafe -From (Join-Path $localeRoot "README.md") -To (Join-Path $root "README.md")
+Copy-FileSafe -From (Join-Path $localeRoot "INDEX.md") -To (Join-Path $root "INDEX.md")
+Copy-FileSafe -From (Join-Path $localeRoot "CHANGELOG.md") -To (Join-Path $root "CHANGELOG.md")
 
-Copy-FileSafe -From (Join-Path $assetsRoot "templates\\REQ-TEMPLATE.md") -To (Join-Path $root "templates\\REQ-TEMPLATE.md")
-Copy-FileSafe -From (Join-Path $assetsRoot "templates\\ADR-TEMPLATE.md") -To (Join-Path $root "templates\\ADR-TEMPLATE.md")
-Copy-FileSafe -From (Join-Path $assetsRoot "templates\\ACCEPTANCE-TEMPLATE.md") -To (Join-Path $root "templates\\ACCEPTANCE-TEMPLATE.md")
+Copy-FileSafe -From (Join-Path $localeRoot "templates\\REQ-TEMPLATE.md") -To (Join-Path $root "templates\\REQ-TEMPLATE.md")
+Copy-FileSafe -From (Join-Path $localeRoot "templates\\ADR-TEMPLATE.md") -To (Join-Path $root "templates\\ADR-TEMPLATE.md")
+Copy-FileSafe -From (Join-Path $localeRoot "templates\\ACCEPTANCE-TEMPLATE.md") -To (Join-Path $root "templates\\ACCEPTANCE-TEMPLATE.md")
 
 Write-Host ""
-Write-Host "Initialized requirements workspace at: $root"
+Write-Host "Initialized requirements workspace at: $root (locale: $Locale)"
 Write-Host "Next: create a REQ via req-new.ps1"
-
