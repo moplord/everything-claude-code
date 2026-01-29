@@ -17,7 +17,7 @@ Important:
 ## Where Requirements Live (Target Repo)
 
 Default root folder (configurable): `requirements/`
-Default locale: `en-US` (supports `zh-CN`)
+Default locale: `zh-CN` (supports `en-US`)
 
 Layout:
 ```
@@ -81,6 +81,12 @@ Rules:
 - Explicitly list Non-Goals (to prevent scope creep).
 - The appendix file is equally authoritative, but contains structured, derivation-ready tables.
 - `req-new.ps1` also creates `requirements/ACCEPTANCE/REQ-XXX-acceptance.md` as a checklist scaffold.
+
+Naming:
+- Keep the REQ narrative human-friendly (Chinese is fine).
+- In `Type=domain-model` appendices, assign stable code identifiers:
+  - `EntityCode` (PascalCase) and `FieldCode` (camelCase).
+- In consumer appendices, reference fields via `EntityCode.FieldCode` (never "guess" English names).
 
 ### Step 2: Acceptance Criteria Must Be Verifiable
 

@@ -8,6 +8,49 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Keep this script ASCII-only for Windows PowerShell compatibility.
+$ZH_STATUS = [regex]::Unescape('\u72b6\u6001')
+$ZH_VERSION = [regex]::Unescape('\u7248\u672c')
+$ZH_LAST_UPDATED = [regex]::Unescape('\u6700\u540e\u66f4\u65b0')
+$ZH_UPDATED_AT = [regex]::Unescape('\u66f4\u65b0\u65f6\u95f4')
+$ZH_TYPE = [regex]::Unescape('\u7c7b\u578b')
+$ZH_SERVICE = [regex]::Unescape('\u670d\u52a1')
+$ZH_SERVICE_ALT = [regex]::Unescape('\u5fae\u670d\u52a1')
+
+function Count-ReplacementChar {
+  param([string]$s)
+  if (-not $s) { return 0 }
+  return ([regex]::Matches($s, [string][char]0xFFFD)).Count
+}
+
+function Read-TextFile {
+  param([string]$path)
+
+  $bytes = [System.IO.File]::ReadAllBytes($path)
+  if ($bytes.Length -ge 2 -and $bytes[0] -eq 0xFF -and $bytes[1] -eq 0xFE) {
+    return [System.Text.Encoding]::Unicode.GetString($bytes, 2, $bytes.Length - 2)
+  }
+  if ($bytes.Length -ge 2 -and $bytes[0] -eq 0xFE -and $bytes[1] -eq 0xFF) {
+    return [System.Text.Encoding]::BigEndianUnicode.GetString($bytes, 2, $bytes.Length - 2)
+  }
+  if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
+    return [System.Text.Encoding]::UTF8.GetString($bytes, 3, $bytes.Length - 3)
+  }
+
+  $utf8 = [System.Text.Encoding]::UTF8.GetString($bytes)
+  $utf8Bad = Count-ReplacementChar -s $utf8
+  if ($utf8Bad -gt 0) {
+    try {
+      $gbk = [System.Text.Encoding]::GetEncoding(936).GetString($bytes)
+      $gbkBad = Count-ReplacementChar -s $gbk
+      if ($gbkBad -lt $utf8Bad) { return $gbk }
+    } catch {
+      # Ignore and fall back to UTF-8.
+    }
+  }
+  return $utf8
+}
+
 function Get-ReqIdFromFileName {
   param([string]$name)
   $m = [regex]::Match($name, '^REQ-(\d{3})-')
@@ -42,7 +85,7 @@ if (!(Test-Path $root)) { throw "RootPath does not exist: $root" }
 
 $changelogPath = Join-Path $root "CHANGELOG.md"
 if (!(Test-Path $changelogPath)) { throw "Missing CHANGELOG.md at: $changelogPath" }
-$changelogText = Get-Content -Raw -Encoding UTF8 $changelogPath
+$changelogText = Read-TextFile -path $changelogPath
 
 $ledgerPath = Join-Path $root $LedgerRelPath
 $ledgerDir = Split-Path -Parent $ledgerPath
@@ -51,7 +94,7 @@ if (!(Test-Path $ledgerDir)) { New-Item -ItemType Directory -Force -Path $ledger
 $old = $null
 if (Test-Path $ledgerPath) {
   try {
-    $old = Get-Content -Raw -Encoding UTF8 $ledgerPath | ConvertFrom-Json
+    $old = (Read-TextFile -path $ledgerPath) | ConvertFrom-Json
   } catch {
     throw "ledger.json exists but is not valid JSON: $ledgerPath"
   }
@@ -80,12 +123,12 @@ foreach ($f in $reqFiles) {
   $rid = Get-ReqIdFromFileName -name $f.Name
   if (-not $rid) { continue }
 
-  $reqText = Get-Content -Raw -Encoding UTF8 $f.FullName
-  $status = Get-FrontMatterLikeField -text $reqText -fields @("Status")
-  $version = Get-FrontMatterLikeField -text $reqText -fields @("Version")
-  $type = Get-FrontMatterLikeField -text $reqText -fields @("Type")
-  $service = Get-FrontMatterLikeField -text $reqText -fields @("Service")
-  $lastUpdated = Get-FrontMatterLikeField -text $reqText -fields @("Last Updated")
+  $reqText = Read-TextFile -path $f.FullName
+  $status = Get-FrontMatterLikeField -text $reqText -fields @("Status", $ZH_STATUS)
+  $version = Get-FrontMatterLikeField -text $reqText -fields @("Version", $ZH_VERSION)
+  $type = Get-FrontMatterLikeField -text $reqText -fields @("Type", $ZH_TYPE)
+  $service = Get-FrontMatterLikeField -text $reqText -fields @("Service", $ZH_SERVICE, $ZH_SERVICE_ALT)
+  $lastUpdated = Get-FrontMatterLikeField -text $reqText -fields @("Last Updated", $ZH_LAST_UPDATED, $ZH_UPDATED_AT)
 
   $appendixPath = Join-Path $root (([System.IO.Path]::GetFileNameWithoutExtension($f.Name)) + "-appendix.md")
   $acceptancePath = Join-Path $root ("ACCEPTANCE\\{0}-acceptance.md" -f $rid)

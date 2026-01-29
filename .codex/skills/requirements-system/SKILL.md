@@ -50,6 +50,17 @@ To prevent conflicts when multiple scopes share one DB:
 - All other requirements must reference the owning domain-model requirement version and
   must not redefine types/lengths/relationships.
 
+### Naming: Display vs Code Identifiers (No Physical Names)
+
+Requirements stay human-readable, but downstream derivation must not guess identifiers.
+Use two layers of naming in `Type=domain-model` appendices:
+- Display name (human): typically Chinese
+- Code identifiers (machine): `EntityCode` (PascalCase) and `FieldCode` (camelCase)
+
+Other REQs should reference model items via `EntityCode.FieldCode` (e.g. `Product.mainImage`).
+Do not introduce physical naming (`table_name`/`column_name`) into requirements unless it is a hard external contract,
+in which case record it explicitly as a decision (ADR) and keep it out of the core model tables.
+
 ### Optional Microservices
 
 Use `Service` to express ownership boundaries:

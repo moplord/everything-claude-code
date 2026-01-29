@@ -3,7 +3,7 @@ param(
   [string]$RootPath = "requirements",
 
   [Parameter(Mandatory = $false)]
-  [string]$Locale = "en-US",
+  [string]$Locale = "zh-CN",
 
   [Parameter(Mandatory = $false)]
   [switch]$Force

@@ -22,17 +22,19 @@ Source: the referenced `domain-model` REQ version.
 
 ### A1. Entities/Fields Used
 
-| Entity | Field | Purpose | Notes |
-|---|---|---|---|
+| Entity (Display) | EntityCode | Field (Display) | FieldCode | Purpose | Notes |
+|---|---|---|---|---|---|
 
 ### A2. Relationships Used
 
-| Name | Entity A | Entity B | Cardinality | Purpose | Notes |
+| Name | Entity A (EntityCode) | Entity B (EntityCode) | Cardinality | Purpose | Notes |
 |---|---|---|---|---|---|
 
 ## B. Field Projection (Visibility/Editability)
 
-| Scope | Entity.Field | Visible | Editable | Hidden/Read-only Rationale | Notes |
+Naming: reference model fields as `EntityCode.FieldCode` (e.g. `Product.mainImage`).
+
+| Scope | EntityCode.FieldCode | Visible | Editable | Hidden/Read-only Rationale | Notes |
 |---|---|---:|---:|---|---|
 
 ## C. Interaction & State Machines (Business-Level)
@@ -44,12 +46,12 @@ Source: the referenced `domain-model` REQ version.
 
 ### C2. State Machine (If applicable)
 
-| Entity.Field | From | Event (Action/Button) | Guard (Condition) | To | Side Effects | Notes |
+| EntityCode.FieldCode | From | Event (Action/Button) | Guard (Condition) | To | Side Effects | Notes |
 |---|---|---|---|---|---|---|
 
 ## D. Files (If applicable)
 
-| Scope | Scenario | Binds To (Entity.Field/Assoc) | Formats | Max Size | Replace Rule | Permission | Failure Rollback | Download/Preview |
+| Scope | Scenario | Binds To (EntityCode.FieldCode / Assoc) | Formats | Max Size | Replace Rule | Permission | Failure Rollback | Download/Preview |
 |---|---|---|---|---|---|---|---|---|
 
 ## E. AC -> Tests -> Evidence (Traceability)
@@ -61,4 +63,3 @@ Source: the referenced `domain-model` REQ version.
 
 | Gate | Requirement | Blocking | Notes |
 |---|---|---:|---|
-

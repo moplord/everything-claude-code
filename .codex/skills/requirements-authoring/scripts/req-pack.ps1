@@ -23,6 +23,40 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+function Count-ReplacementChar {
+  param([string]$s)
+  if (-not $s) { return 0 }
+  return ([regex]::Matches($s, [string][char]0xFFFD)).Count
+}
+
+function Read-TextFile {
+  param([string]$path)
+
+  $bytes = [System.IO.File]::ReadAllBytes($path)
+  if ($bytes.Length -ge 2 -and $bytes[0] -eq 0xFF -and $bytes[1] -eq 0xFE) {
+    return [System.Text.Encoding]::Unicode.GetString($bytes, 2, $bytes.Length - 2)
+  }
+  if ($bytes.Length -ge 2 -and $bytes[0] -eq 0xFE -and $bytes[1] -eq 0xFF) {
+    return [System.Text.Encoding]::BigEndianUnicode.GetString($bytes, 2, $bytes.Length - 2)
+  }
+  if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
+    return [System.Text.Encoding]::UTF8.GetString($bytes, 3, $bytes.Length - 3)
+  }
+
+  $utf8 = [System.Text.Encoding]::UTF8.GetString($bytes)
+  $utf8Bad = Count-ReplacementChar -s $utf8
+  if ($utf8Bad -gt 0) {
+    try {
+      $gbk = [System.Text.Encoding]::GetEncoding(936).GetString($bytes)
+      $gbkBad = Count-ReplacementChar -s $gbk
+      if ($gbkBad -lt $utf8Bad) { return $gbk }
+    } catch {
+      # Ignore and fall back to UTF-8.
+    }
+  }
+  return $utf8
+}
+
 function Find-ReqMainFile {
   param([string]$root, [string]$rid)
   $f = Get-ChildItem -Path $root -File -Filter "$rid-*.md" | Where-Object { $_.Name -notlike "*-appendix.md" } | Select-Object -First 1
@@ -74,17 +108,17 @@ if ($rid -notmatch '^REQ-\d{3}$') { throw "ReqId must look like REQ-### (got: $R
 
 $main = Find-ReqMainFile -root $root -rid $rid
 if (-not $main) { throw "REQ not found: $rid" }
-$mainText = Get-Content -Raw -Encoding UTF8 $main
+$mainText = Read-TextFile -path $main
 
 $appendix = Find-ReqAppendixFile -root $root -mainFile $main
 if (-not $appendix) { throw "Appendix not found for: $main" }
-$appendixText = Get-Content -Raw -Encoding UTF8 $appendix
+$appendixText = Read-TextFile -path $appendix
 
 $acceptancePath = Join-Path $root ("ACCEPTANCE\\{0}-acceptance.md" -f $rid)
 $acceptanceText = ""
 if ($IncludeAcceptance) {
   if (Test-Path $acceptancePath) {
-    $acceptanceText = Get-Content -Raw -Encoding UTF8 $acceptancePath
+    $acceptanceText = Read-TextFile -path $acceptancePath
   } else {
     $acceptanceText = "(missing acceptance checklist: " + (Split-Path -Leaf $acceptancePath) + ")"
   }
@@ -93,7 +127,7 @@ if ($IncludeAcceptance) {
 $changelogPath = Join-Path $root "CHANGELOG.md"
 $changelogText = ""
 if ($IncludeChangelog -and (Test-Path $changelogPath)) {
-  $changelogText = Get-Content -Raw -Encoding UTF8 $changelogPath
+  $changelogText = Read-TextFile -path $changelogPath
 }
 
 $refs = Parse-References -s (Parse-HeaderValue -text $mainText -key "References")
@@ -112,10 +146,10 @@ if ($IncludeReferences) {
     if ($r -eq $rid) { continue }
     $rm = Find-ReqMainFile -root $root -rid $r
     if (-not $rm) { continue }
-    $rmText = Get-Content -Raw -Encoding UTF8 $rm
+    $rmText = Read-TextFile -path $rm
     $rax = Find-ReqAppendixFile -root $root -mainFile $rm
     $raxText = ""
-    if ($rax) { $raxText = Get-Content -Raw -Encoding UTF8 $rax }
+    if ($rax) { $raxText = Read-TextFile -path $rax }
 
     $refBlocks += [pscustomobject]@{
       id = $r
@@ -169,7 +203,7 @@ if ($IncludeDecisions -and $decisions.Count -gt 0) {
   foreach ($d in $decisions) {
     $out += "### $(Split-Path -Leaf $d.FullName)"
     $out += ""
-    $out += (Get-Content -Raw -Encoding UTF8 $d.FullName)
+    $out += (Read-TextFile -path $d.FullName)
     $out += ""
   }
 }
@@ -206,4 +240,3 @@ if ($IncludeChangelog -and $changelogText) {
 
 Set-Content -NoNewline -Encoding UTF8 -Path $outPath -Value ($out -join "`n")
 Write-Host ("Wrote pack: " + $outPath)
-

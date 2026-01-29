@@ -18,15 +18,19 @@ artifacts can be generated WITHOUT guessing. Do not paste JDL or CI YAML here.
 
 ## A. Domain Model (Derivation-Ready)
 
+Naming:
+- Use `EntityCode` (PascalCase) and `FieldCode` (camelCase) as stable identifiers.
+- Do not record physical table/column names here unless it is an external contract (then capture via ADR).
+
 ### A1. Entities
 
-| Entity | Description | Auditing Fields | Soft Delete | Optimistic Lock | Notes |
-|---|---|---|---|---|---|
+| Entity (Display) | EntityCode (PascalCase) | Description | Auditing Fields | Soft Delete | Optimistic Lock | Notes |
+|---|---|---|---|---|---|---|
 
 ### A2. Field Dictionary (per Entity)
 
-| Field | Meaning | Type Candidates (JDL) | Required | Default | Length/Precision/Scale | Validation/Range | Unique/Index | System-Managed | Notes | Example |
-|---|---|---|---:|---|---|---|---|---:|---|---|
+| Field (Display) | FieldCode (camelCase) | Meaning | Type Candidates (JDL) | Required | Default | Length/Precision/Scale | Validation/Range | Unique/Index | System-Managed | Notes | Example |
+|---|---|---|---|---:|---|---|---|---|---:|---|---|
 
 ### A3. Enums
 
@@ -35,7 +39,7 @@ artifacts can be generated WITHOUT guessing. Do not paste JDL or CI YAML here.
 
 ### A4. Relationships
 
-| Name | Entity A | Entity B | Cardinality | Owner Side | Required | Bidirectional | Join/Fields | Delete/Cascade | Notes |
+| Name | Entity A (EntityCode) | Entity B (EntityCode) | Cardinality | Owner Side | Required | Bidirectional | Join/Fields (FieldCode) | Delete/Cascade | Notes |
 |---|---|---|---|---|---:|---:|---|---|---|
 
 ### A5. Invariants (Must Hold)
@@ -45,7 +49,7 @@ artifacts can be generated WITHOUT guessing. Do not paste JDL or CI YAML here.
 
 ## B. Files (Upload/Download Contract)
 
-| Scenario | Field/Association | Storage Strategy | Formats | Max Size | Max Dimensions | Replace Rule | Delete Old Rule | Permission | Failure Rollback | Download/Preview |
+| Scenario | Binds To (EntityCode.FieldCode / Assoc) | Storage Strategy | Formats | Max Size | Max Dimensions | Replace Rule | Delete Old Rule | Permission | Failure Rollback | Download/Preview |
 |---|---|---|---|---|---|---|---|---|---|---|
 
 ## C. Domain Events / API Contracts (Requirements-Level)
@@ -57,4 +61,3 @@ artifacts can be generated WITHOUT guessing. Do not paste JDL or CI YAML here.
 
 | Gate | Requirement | Blocking | Notes |
 |---|---|---:|---|
-

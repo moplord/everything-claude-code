@@ -25,6 +25,41 @@ $ZH_REFERENCES_ALT = [regex]::Unescape('\u53c2\u8003')
 $ZH_SERVICE = [regex]::Unescape('\u670d\u52a1')
 $ZH_SERVICE_ALT = [regex]::Unescape('\u5fae\u670d\u52a1')
 
+function Count-ReplacementChar {
+  param([string]$s)
+  if (-not $s) { return 0 }
+  return ([regex]::Matches($s, [string][char]0xFFFD)).Count
+}
+
+function Read-TextFile {
+  param([string]$path)
+
+  # Decode markdown robustly across common Windows editors.
+  $bytes = [System.IO.File]::ReadAllBytes($path)
+  if ($bytes.Length -ge 2 -and $bytes[0] -eq 0xFF -and $bytes[1] -eq 0xFE) {
+    return [System.Text.Encoding]::Unicode.GetString($bytes, 2, $bytes.Length - 2)
+  }
+  if ($bytes.Length -ge 2 -and $bytes[0] -eq 0xFE -and $bytes[1] -eq 0xFF) {
+    return [System.Text.Encoding]::BigEndianUnicode.GetString($bytes, 2, $bytes.Length - 2)
+  }
+  if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
+    return [System.Text.Encoding]::UTF8.GetString($bytes, 3, $bytes.Length - 3)
+  }
+
+  $utf8 = [System.Text.Encoding]::UTF8.GetString($bytes)
+  $utf8Bad = Count-ReplacementChar -s $utf8
+  if ($utf8Bad -gt 0) {
+    try {
+      $gbk = [System.Text.Encoding]::GetEncoding(936).GetString($bytes)
+      $gbkBad = Count-ReplacementChar -s $gbk
+      if ($gbkBad -lt $utf8Bad) { return $gbk }
+    } catch {
+      # Ignore and fall back to UTF-8.
+    }
+  }
+  return $utf8
+}
+
 function Get-FrontMatterLikeField {
   param([string]$text, [string[]]$fields)
   $lines = $text -split "`n"
@@ -92,7 +127,7 @@ if (-not $outPath -or $outPath.Trim().Length -eq 0) {
 $reqFiles = Get-ChildItem -Path $root -File -Filter "REQ-*.md" | Where-Object { $_.Name -notlike "*-appendix.md" } | Sort-Object Name
 $items = @()
 foreach ($f in $reqFiles) {
-  $t = Get-Content -Raw -Encoding UTF8 $f.FullName
+  $t = Read-TextFile -path $f.FullName
   if ($f.Name -notmatch '^REQ-(\d{3})-') { continue }
   $id = ("REQ-{0}" -f $Matches[1])
 

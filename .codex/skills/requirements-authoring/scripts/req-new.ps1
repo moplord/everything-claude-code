@@ -27,7 +27,7 @@ param(
   [string]$Owner = "team",
 
   [Parameter(Mandatory = $false)]
-  [string]$Locale = "en-US"
+  [string]$Locale = "zh-CN"
   ,
   [Parameter(Mandatory = $false)]
   [switch]$NoLedgerUpdate
