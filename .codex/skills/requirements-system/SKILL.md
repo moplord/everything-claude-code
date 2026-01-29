@@ -28,6 +28,14 @@ All REQ files remain in a single directory (e.g. `requirements/REQ-*.md`).
 Hierarchy is represented via metadata (`Level`, `Parent`) and a generated index (`requirements/INDEX.md`).
 This keeps storage simple while allowing large projects to be navigated deterministically.
 
+### Ledger (No Silent Drift)
+
+To make requirements "auditably authoritative" over time, keep a committed ledger
+(`requirements/.audit/ledger.json`) that records hashes and versions per REQ. This prevents:
+- edits without version bump,
+- edits without changelog entry,
+- "I forgot to update the appendix/acceptance checklist".
+
 ### Scopes (Not "mp/admin")
 
 `Scopes` is an arbitrary set of labels representing consumers:
@@ -94,3 +102,6 @@ To keep "requirements as authority" workable when the set grows beyond LLM conte
 - Keep each REQ narrow and link via `Parent` + `References` instead of writing mega-docs.
 - For consumer features, use the appendix "Model Snapshot" to include only the subset needed to implement/test,
   so downstream steps don't have to open the full domain-model every time.
+
+- For downstream generation/testing, use a per-REQ "pack" (REQ + appendix + acceptance + ADRs + optionally referenced REQs)
+  instead of feeding the entire requirements directory into context.

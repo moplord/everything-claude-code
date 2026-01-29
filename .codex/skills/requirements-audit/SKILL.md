@@ -32,6 +32,9 @@ Hard errors:
 - REQ files missing required headers: Status/Version/Owner/Last Updated + metadata (Type/Level/Parent/Scopes/References/Service)
 - REQ missing Non-Goals or Acceptance Criteria (Chinese headings supported)
 - Type-specific appendix structure is present (domain-model vs consumer-feature)
+- Acceptance checklist exists and covers all AC items (1:1)
+- If any REQ is non-DRAFT, a ledger file exists and matches file hashes (prevents untracked drift)
+- A ledger file exists and matches file hashes (prevents untracked drift)
 - APPROVED REQ has open questions remaining
 
 Warnings:
@@ -51,3 +54,5 @@ If audit fails:
 - The auditor recognizes both English and Chinese labels for common header fields (e.g. `Version`/`版本`),
   and recognizes Chinese section titles like `非目标` and `验收标准`.
 - REQ + appendix must remain requirements-level. Do not paste JDL syntax or CI YAML.
+- For change tracking, run the authoring skill's `req-ledger.ps1` to update `requirements/.audit/ledger.json` after
+  bumping Version and adding a CHANGELOG entry.

@@ -45,6 +45,8 @@ New-Item -ItemType Directory -Force -Path (Join-Path $root "templates") | Out-Nu
 New-Item -ItemType Directory -Force -Path (Join-Path $root "CONVERSATIONS") | Out-Null
 New-Item -ItemType Directory -Force -Path (Join-Path $root "DECISIONS") | Out-Null
 New-Item -ItemType Directory -Force -Path (Join-Path $root "ACCEPTANCE") | Out-Null
+New-Item -ItemType Directory -Force -Path (Join-Path $root ".audit") | Out-Null
+New-Item -ItemType Directory -Force -Path (Join-Path $root ".packs") | Out-Null
 
 Copy-FileSafe -From (Join-Path $localeRoot "README.md") -To (Join-Path $root "README.md")
 Copy-FileSafe -From (Join-Path $localeRoot "INDEX.md") -To (Join-Path $root "INDEX.md")
@@ -56,6 +58,7 @@ Copy-FileSafe -From (Join-Path $localeRoot "templates\\ACCEPTANCE-TEMPLATE.md") 
 Copy-FileSafe -From (Join-Path $localeRoot "templates\\APPENDIX-DOMAIN-TEMPLATE.md") -To (Join-Path $root "templates\\APPENDIX-DOMAIN-TEMPLATE.md")
 Copy-FileSafe -From (Join-Path $localeRoot "templates\\APPENDIX-CONSUMER-TEMPLATE.md") -To (Join-Path $root "templates\\APPENDIX-CONSUMER-TEMPLATE.md")
 Copy-FileSafe -From (Join-Path $localeRoot "templates\\APPENDIX-GENERIC-TEMPLATE.md") -To (Join-Path $root "templates\\APPENDIX-GENERIC-TEMPLATE.md")
+Copy-FileSafe -From (Join-Path $localeRoot "templates\\APPENDIX-CROSS-SERVICE-TEMPLATE.md") -To (Join-Path $root "templates\\APPENDIX-CROSS-SERVICE-TEMPLATE.md")
 
 Write-Host ""
 Write-Host "Initialized requirements workspace at: $root (locale: $Locale)"

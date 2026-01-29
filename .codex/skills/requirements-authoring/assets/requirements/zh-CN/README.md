@@ -8,3 +8,6 @@
 - 每条需求必须有可验证的验收标准。
 - 任何改变含义的编辑都必须提升版本并写入 CHANGELOG。
 
+实践：
+- 用 `req-index.ps1` 生成 `INDEX.md`（大型项目不要手改索引）。
+- 用 `req-ledger.ps1` 更新 `requirements/.audit/ledger.json`，防止“静默漂移”。

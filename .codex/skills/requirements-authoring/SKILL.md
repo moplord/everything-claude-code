@@ -32,6 +32,7 @@ requirements/
     APPENDIX-DOMAIN-TEMPLATE.md
     APPENDIX-CONSUMER-TEMPLATE.md
     APPENDIX-GENERIC-TEMPLATE.md
+    APPENDIX-CROSS-SERVICE-TEMPLATE.md
   CONVERSATIONS/
   DECISIONS/
   ACCEPTANCE/
@@ -79,6 +80,7 @@ Rules:
 - Use SHALL/SHOULD/MAY for requirements language.
 - Explicitly list Non-Goals (to prevent scope creep).
 - The appendix file is equally authoritative, but contains structured, derivation-ready tables.
+- `req-new.ps1` also creates `requirements/ACCEPTANCE/REQ-XXX-acceptance.md` as a checklist scaffold.
 
 ### Step 2: Acceptance Criteria Must Be Verifiable
 
@@ -121,6 +123,25 @@ For large projects, prefer generating the index deterministically (Mode A: flat 
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File "<path-to-skill>/scripts/req-index.ps1" -RootPath requirements
+```
+
+## Ledger (Change Tracking Gate)
+
+To prevent silent drift and enforce "change => version bump + changelog", maintain a ledger:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "<path-to-skill>/scripts/req-ledger.ps1" -RootPath requirements
+```
+
+This writes/updates `requirements/.audit/ledger.json` and fails if a REQ changed without a version bump
+or a CHANGELOG entry.
+
+## Req Pack (LLM Context Slicing)
+
+When the requirements set is too large to fit in context, generate a minimal authoritative packet for one REQ:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "<path-to-skill>/scripts/req-pack.ps1" -RootPath requirements -ReqId REQ-001 -IncludeReferences -IncludeDecisions
 ```
 
 ## Versioning Rules
