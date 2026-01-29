@@ -53,7 +53,9 @@ Copy-FileSafe -From (Join-Path $localeRoot "CHANGELOG.md") -To (Join-Path $root 
 Copy-FileSafe -From (Join-Path $localeRoot "templates\\REQ-TEMPLATE.md") -To (Join-Path $root "templates\\REQ-TEMPLATE.md")
 Copy-FileSafe -From (Join-Path $localeRoot "templates\\ADR-TEMPLATE.md") -To (Join-Path $root "templates\\ADR-TEMPLATE.md")
 Copy-FileSafe -From (Join-Path $localeRoot "templates\\ACCEPTANCE-TEMPLATE.md") -To (Join-Path $root "templates\\ACCEPTANCE-TEMPLATE.md")
-Copy-FileSafe -From (Join-Path $localeRoot "templates\\APPENDIX-TEMPLATE.md") -To (Join-Path $root "templates\\APPENDIX-TEMPLATE.md")
+Copy-FileSafe -From (Join-Path $localeRoot "templates\\APPENDIX-DOMAIN-TEMPLATE.md") -To (Join-Path $root "templates\\APPENDIX-DOMAIN-TEMPLATE.md")
+Copy-FileSafe -From (Join-Path $localeRoot "templates\\APPENDIX-CONSUMER-TEMPLATE.md") -To (Join-Path $root "templates\\APPENDIX-CONSUMER-TEMPLATE.md")
+Copy-FileSafe -From (Join-Path $localeRoot "templates\\APPENDIX-GENERIC-TEMPLATE.md") -To (Join-Path $root "templates\\APPENDIX-GENERIC-TEMPLATE.md")
 
 Write-Host ""
 Write-Host "Initialized requirements workspace at: $root (locale: $Locale)"

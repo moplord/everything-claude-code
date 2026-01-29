@@ -5,6 +5,19 @@ Version: v0.1.0
 Owner: <name/team>
 Last Updated: YYYY-MM-DD
 
+# Metadata (Required)
+Type: <system|cross-cutting|domain-model|consumer-feature|cross-service-contract|module>
+Level: <L0|L1|L2|L3|...>
+Parent: <REQ-XXX-...|>
+Scopes: <comma-separated; required for consumer-feature>
+References: <REQ IDs + versions; required for consumer-feature>
+Service: <monolith|service-name|cross-service|>
+
+## 0. Reader Guide
+
+- To understand "what/why": read sections 1-5 + 9 (Acceptance Criteria)
+- To derive downstream artifacts without guessing: read the `-appendix.md` (still requirements, not implementation)
+
 ## 1. Summary
 
 - What is required (1-3 sentences).
@@ -27,31 +40,28 @@ Last Updated: YYYY-MM-DD
 
 ## 5. Stakeholders
 
+- Users/Roles:
 - Product:
 - Engineering:
 - Security:
 - Ops:
-- Users:
 
-## 6. Terminology / Glossary
+## 6. Flows (Conceptual)
 
-- Term A:
-- Term B:
+- Primary flows:
+- Error flows:
+- Explicit out-of-scope edge cases:
 
-## 7. User Stories (Optional)
-
-- US1: As a <role>, I want <capability>, so that <benefit>.
-
-## 8. Functional Requirements
+## 7. Functional Requirements (Behavior)
 
 Use SHALL/SHOULD/MAY to reduce ambiguity.
 
 - FR1 (SHALL):
 - FR2 (SHOULD):
 
-## 9. Non-Functional Requirements
+## 8. Non-Functional Requirements (Requirements-Level)
 
-Be measurable where possible.
+Be measurable where possible. Do not paste CI YAML or implementation commands.
 
 - NFR1 (Performance):
 - NFR2 (Reliability):
@@ -59,52 +69,25 @@ Be measurable where possible.
 - NFR4 (Observability):
 - NFR5 (Compliance):
 
-## 10. Data / Domain Rules (Conceptual Only)
+## 9. Acceptance Criteria (Authoritative)
 
-- Entities involved (conceptual; NOT generator schemas)
-- Invariants and validation rules
-- Ownership/lifecycle expectations
-
-## 11. Flows (Conceptual)
-
-- Primary flows:
-- Error flows:
-- Out-of-scope edge cases:
-
-## 12. Acceptance Criteria (Authoritative)
-
-Each AC must be testable/verifiable.
+Each AC must be verifiable. Provide an AC->test/evidence mapping in the appendix.
 
 - AC1:
 - AC2:
 - AC3:
 
-## 13. Dependencies
+## 10. Risks & Assumptions
 
-- Dep1:
+- Risks:
+- Assumptions:
 
-## 14. Constraints
-
-- C1:
-
-## 15. Risks
-
-- R1 (Impact x Likelihood) + mitigation:
-
-## 16. Assumptions
-
-- A1:
-
-## 17. Open Questions (Must Resolve Before v1.0)
+## 11. Open Questions (Must Resolve Before APPROVED)
 
 - Q1:
+- Q2:
 
-## 18. Decisions (ADRs)
-
-- ADR links (if any):
-  - `DECISIONS/REQ-XXX-ADR-YYY-<title>.md`
-
-## 19. Version History
+## 12. Version History
 
 - v0.1.0 (YYYY-MM-DD): initial draft
 

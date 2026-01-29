@@ -29,8 +29,9 @@ Exit codes:
 
 Hard errors:
 - missing baseline files: README/INDEX/CHANGELOG/templates
-- REQ files missing required headers: Status/Version/Owner/Last Updated
-- REQ missing Non-Goals or Acceptance Criteria
+- REQ files missing required headers: Status/Version/Owner/Last Updated + metadata (Type/Level/Parent/Scopes/References/Service)
+- REQ missing Non-Goals or Acceptance Criteria (Chinese headings supported)
+- Type-specific appendix structure is present (domain-model vs consumer-feature)
 - APPROVED REQ has open questions remaining
 
 Warnings:
@@ -45,3 +46,8 @@ If audit fails:
 - add ADRs for decisions that change interpretation
 - bump version + update CHANGELOG if meaning changed
 
+## Notes
+
+- The auditor recognizes both English and Chinese labels for common header fields (e.g. `Version`/`版本`),
+  and recognizes Chinese section titles like `非目标` and `验收标准`.
+- REQ + appendix must remain requirements-level. Do not paste JDL syntax or CI YAML.

@@ -32,6 +32,7 @@ Explicitly reference skills when you want a specific workflow, for example:
 - `$requirements-elicitation`
 - `$requirements-authoring`
 - `$requirements-audit`
+- `$requirements-system`
 
 ## Scope Guardrail
 

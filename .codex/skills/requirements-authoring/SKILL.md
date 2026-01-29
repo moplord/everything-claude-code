@@ -29,7 +29,9 @@ requirements/
     REQ-TEMPLATE.md
     ADR-TEMPLATE.md
     ACCEPTANCE-TEMPLATE.md
-    APPENDIX-TEMPLATE.md
+    APPENDIX-DOMAIN-TEMPLATE.md
+    APPENDIX-CONSUMER-TEMPLATE.md
+    APPENDIX-GENERIC-TEMPLATE.md
   CONVERSATIONS/
   DECISIONS/
   ACCEPTANCE/
@@ -59,7 +61,17 @@ Require one of:
 ### Step 1: Create a New REQ File
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File "<path-to-skill>/scripts/req-new.ps1" -RootPath requirements -Title "short title" -Locale zh-CN
+powershell -ExecutionPolicy Bypass -File "<path-to-skill>/scripts/req-new.ps1" `
+  -RootPath requirements `
+  -Title "short title" `
+  -Type consumer-feature `
+  -Level L3 `
+  -Parent "" `
+  -Scopes "web,mp" `
+  -References "REQ-001 (v1.2.0)" `
+  -Service "monolith" `
+  -Owner "team" `
+  -Locale zh-CN
 ```
 
 Rules:
@@ -87,7 +99,7 @@ It should map 1:1 to AC items and include an "Evidence" section for later verifi
 
 ### Step 3.5: Fill the Appendix (Required for Approval)
 
-Create and maintain `requirements/REQ-XXX-<title>-appendix.md` using the appendix template.
+Create and maintain `requirements/REQ-XXX-<title>-appendix.md` using the appendix template selected by `-Type`.
 
 The appendix is still a requirements document (human-readable), but it MUST be structured
 enough to allow downstream generation (JDL/tests/CI) without guessing. It MUST NOT contain
@@ -105,6 +117,12 @@ Link ADRs from the REQ.
 - Add the REQ to `requirements/INDEX.md` with status + current version.
 - Append a `requirements/CHANGELOG.md` entry for any meaning-changing update.
 
+For large projects, prefer generating the index deterministically (Mode A: flat files, tree via metadata):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "<path-to-skill>/scripts/req-index.ps1" -RootPath requirements
+```
+
 ## Versioning Rules
 
 REQ version format: `vMAJOR.MINOR.PATCH`
@@ -114,6 +132,10 @@ REQ version format: `vMAJOR.MINOR.PATCH`
 
 Rule:
 - If meaning changes, you MUST bump version and append to `CHANGELOG.md`.
+
+Deletion:
+- Prefer `Status: DEPRECATED` + explanation (and link to replacement) over deleting REQ files,
+  so downstream audits and traceability remain possible.
 
 ## Audit Gate (Required)
 

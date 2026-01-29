@@ -6,6 +6,24 @@ param(
   [string]$Title,
 
   [Parameter(Mandatory = $false)]
+  [string]$Type = "consumer-feature",
+
+  [Parameter(Mandatory = $false)]
+  [string]$Level = "L3",
+
+  [Parameter(Mandatory = $false)]
+  [string]$Parent = "",
+
+  [Parameter(Mandatory = $false)]
+  [string]$Scopes = "",
+
+  [Parameter(Mandatory = $false)]
+  [string]$References = "",
+
+  [Parameter(Mandatory = $false)]
+  [string]$Service = "",
+
+  [Parameter(Mandatory = $false)]
   [string]$Owner = "team",
 
   [Parameter(Mandatory = $false)]
@@ -31,8 +49,9 @@ function Get-NextReqNumber {
   $max = 0
   if (Test-Path $root) {
     Get-ChildItem -Path $root -File -Filter "REQ-*.md" | ForEach-Object {
-      if ($_.Name -match "^REQ-(\\d{3})-") {
-        $n = [int]$Matches[1]
+      $m = [regex]::Match($_.Name, '^REQ-(\d{3})-')
+      if ($m.Success) {
+        $n = [int]$m.Groups[1].Value
         if ($n -gt $max) { $max = $n }
       }
     }
@@ -45,19 +64,34 @@ if (!(Test-Path $root)) {
   throw "RootPath does not exist: $root. Run req-init.ps1 first."
 }
 
-$template = Join-Path $root "templates\\REQ-TEMPLATE.md"
-$appendixTemplate = Join-Path $root "templates\\APPENDIX-TEMPLATE.md"
-if ($Locale -and ($Locale.ToLowerInvariant() -ne "en-us")) {
+$reqTemplate = Join-Path $root "templates\\REQ-TEMPLATE.md"
+$appendixTemplate = ""
+switch ($Type) {
+  "domain-model" { $appendixTemplate = Join-Path $root "templates\\APPENDIX-DOMAIN-TEMPLATE.md" }
+  "consumer-feature" { $appendixTemplate = Join-Path $root "templates\\APPENDIX-CONSUMER-TEMPLATE.md" }
+  default { $appendixTemplate = Join-Path $root "templates\\APPENDIX-GENERIC-TEMPLATE.md" }
+}
+
+# Fallback: if the target repo does not have templates yet, use the skill assets.
+if (!(Test-Path $reqTemplate) -or !(Test-Path $appendixTemplate)) {
   $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
   $assetsRoot = Join-Path $scriptDir "..\\assets\\requirements"
-  $localeRoot = Join-Path $assetsRoot $Locale
+  $localeRoot = $assetsRoot
+  if ($Locale -and ($Locale.ToLowerInvariant() -ne "en-us")) {
+    $localeRoot = Join-Path $assetsRoot $Locale
+  }
   if (Test-Path $localeRoot) {
-    $template = Join-Path $localeRoot "templates\\REQ-TEMPLATE.md"
-    $appendixTemplate = Join-Path $localeRoot "templates\\APPENDIX-TEMPLATE.md"
+    $reqTemplate = Join-Path $localeRoot "templates\\REQ-TEMPLATE.md"
+    switch ($Type) {
+      "domain-model" { $appendixTemplate = Join-Path $localeRoot "templates\\APPENDIX-DOMAIN-TEMPLATE.md" }
+      "consumer-feature" { $appendixTemplate = Join-Path $localeRoot "templates\\APPENDIX-CONSUMER-TEMPLATE.md" }
+      default { $appendixTemplate = Join-Path $localeRoot "templates\\APPENDIX-GENERIC-TEMPLATE.md" }
+    }
   }
 }
-if (!(Test-Path $template)) {
-  throw "Missing template: $template"
+
+if (!(Test-Path $reqTemplate)) {
+  throw "Missing REQ template: $reqTemplate"
 }
 if (!(Test-Path $appendixTemplate)) {
   throw "Missing appendix template: $appendixTemplate"
@@ -77,13 +111,20 @@ if (Test-Path $outPath) {
 }
 
 $today = Get-Date -Format "yyyy-MM-dd"
-$content = Get-Content -Raw -Encoding UTF8 $template
+$cnShortTitle = [regex]::Unescape('<\u77ed\u6807\u9898>')
+$content = Get-Content -Raw -Encoding UTF8 $reqTemplate
 $content = $content -replace 'REQ-XXX', $id
 $content = $content -replace '<Short Title>', $Title
-$content = $content -replace '<短标题>', $Title
+$content = $content -replace $cnShortTitle, $Title
 $content = $content -replace 'Owner: <name/team>', ("Owner: " + $Owner)
 $content = $content -replace 'Last Updated: YYYY-MM-DD', ("Last Updated: " + $today)
 $content = $content -replace 'v0\.1\.0', 'v0.1.0'
+$content = $content -replace '(?m)^Type\\s*:\\s*.*$', ("Type: " + $Type)
+$content = $content -replace '(?m)^Level\\s*:\\s*.*$', ("Level: " + $Level)
+$content = $content -replace '(?m)^Parent\\s*:\\s*.*$', ("Parent: " + $Parent)
+$content = $content -replace '(?m)^Scopes\\s*:\\s*.*$', ("Scopes: " + $Scopes)
+$content = $content -replace '(?m)^References\\s*:\\s*.*$', ("References: " + $References)
+$content = $content -replace '(?m)^Service\\s*:\\s*.*$', ("Service: " + $Service)
 
 Set-Content -NoNewline -Encoding UTF8 -Path $outPath -Value $content
 
@@ -91,10 +132,16 @@ $appendixPath = Join-Path $root $appendixName
 $appendix = Get-Content -Raw -Encoding UTF8 $appendixTemplate
 $appendix = $appendix -replace 'REQ-XXX', $id
 $appendix = $appendix -replace '<Short Title>', $Title
-$appendix = $appendix -replace '<短标题>', $Title
+$appendix = $appendix -replace $cnShortTitle, $Title
 $appendix = $appendix -replace 'Owner: <name/team>', ("Owner: " + $Owner)
 $appendix = $appendix -replace 'Last Updated: YYYY-MM-DD', ("Last Updated: " + $today)
 $appendix = $appendix -replace 'v0\.1\.0', 'v0.1.0'
+$appendix = $appendix -replace '(?m)^Type\\s*:\\s*.*$', ("Type: " + $Type)
+$appendix = $appendix -replace '(?m)^Level\\s*:\\s*.*$', ("Level: " + $Level)
+$appendix = $appendix -replace '(?m)^Parent\\s*:\\s*.*$', ("Parent: " + $Parent)
+$appendix = $appendix -replace '(?m)^Scopes\\s*:\\s*.*$', ("Scopes: " + $Scopes)
+$appendix = $appendix -replace '(?m)^References\\s*:\\s*.*$', ("References: " + $References)
+$appendix = $appendix -replace '(?m)^Service\\s*:\\s*.*$', ("Service: " + $Service)
 Set-Content -NoNewline -Encoding UTF8 -Path $appendixPath -Value $appendix
 
 Write-Host "Created: $outPath"

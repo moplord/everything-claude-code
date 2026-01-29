@@ -18,12 +18,16 @@ Produce a single Markdown section titled `Elicitation Packet` containing:
 - Summary (1-3 sentences)
 - Goals (must-have)
 - Non-goals (explicit)
+- Consumers / scopes (who will use it; do not hardcode names like mp/admin)
 - Stakeholders
 - Glossary (terms that could be interpreted differently)
 - User stories (as-needed)
 - Functional requirements (SHALL/SHOULD/MAY)
 - Non-functional requirements (measurable where possible)
-- Data/domain rules (conceptual only)
+- Data/domain rules (conceptual only; note if a shared DB/domain model is assumed)
+- Field/UI projection needs (what is visible/editable/hidden per scope)
+- State transitions (if any; events/guards/from/to)
+- File upload/download needs (if any; formats/size/permissions/rollback)
 - Primary flows + error flows (conceptual)
 - Acceptance criteria (testable, numbered)
 - Dependencies + constraints
@@ -43,6 +47,9 @@ Ask for:
 - Current behavior (what happens today)
 - Desired outcome (what changes)
 - Hard constraints (time, compliance, platform, integrations)
+- Consumers/scopes (e.g. web/mp/ios/admin/batch/partner; arbitrary labels)
+- Shared model ownership (is there a shared DB/domain-model? who owns it?)
+- Optional service boundary (monolith vs service name if using microservices)
 
 ### Step 2: Freeze Scope Boundaries Early
 
