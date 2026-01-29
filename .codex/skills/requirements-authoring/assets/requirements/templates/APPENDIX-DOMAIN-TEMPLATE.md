@@ -29,8 +29,8 @@ Naming:
 
 ### A2. Field Dictionary (per Entity)
 
-| Field (Display) | FieldCode (camelCase) | Meaning | Type Candidates (JDL) | Required | Default | Length/Precision/Scale | Validation/Range | Unique/Index | System-Managed | Notes | Example |
-|---|---|---|---|---:|---|---|---|---|---:|---|---|
+| EntityCode | Field (Display) | FieldCode(camelCase) | Meaning | Type Candidates (JDL) | Required | Default | Length/Precision/Scale | Validation/Range | Unique/Index | System-Managed | Notes | Example |
+|---|---|---|---|---|---:|---|---|---|---|---:|---|---|
 
 ### A3. Enums
 
@@ -39,8 +39,8 @@ Naming:
 
 ### A4. Relationships
 
-| Name | Entity A (EntityCode) | Entity B (EntityCode) | Cardinality | Owner Side | Required | Bidirectional | Join/Fields (FieldCode) | Delete/Cascade | Notes |
-|---|---|---|---|---|---:|---:|---|---|---|
+| Name | Entity A (EntityCode) | Field On A | Entity B (EntityCode) | Field On B | Cardinality | Owner Side | Required | Bidirectional | Join/Fields (FieldCode) | Delete/Cascade | Notes |
+|---|---|---|---|---|---|---|---:|---:|---|---|---|
 
 ### A5. Invariants (Must Hold)
 
@@ -58,6 +58,21 @@ Naming:
 |---|---|---|---|---|---|---|
 
 ## D. Verification & Quality (Requirements-Level)
+
+### D1. Access Patterns (DB-agnostic)
+
+| Scenario | Filters (EntityCode.FieldCode) | Sort | Pagination | Expected Cardinality | Latency Budget | Notes |
+|---|---|---|---|---|---|---|
+
+### D2. Index Plan (DB-agnostic)
+
+| Index Name | On (EntityCode) | Fields (FieldCode...) | Unique | Purpose | Notes |
+|---|---|---|---:|---|---|
+
+### D3. Cache Plan (Optional)
+
+| Cache Key | Source | TTL | Invalidation | Consistency | Notes |
+|---|---|---|---|---|---|
 
 | Gate | Requirement | Blocking | Notes |
 |---|---|---:|---|

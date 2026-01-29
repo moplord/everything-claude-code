@@ -524,7 +524,10 @@ foreach ($f in $reqFiles) {
       if (($ax -notmatch '(?m)^\|\s*Entity\b.*\|\s*EntityCode\b') -and ($ax -notmatch '(?m)^\|\s*\u5b9e\u4f53.*\|\s*EntityCode\b')) {
         Add-Issue -Severity "WARN" -Path $appendixPath -Message "Domain-model appendix does not appear to include an Entities table with EntityCode column"
       }
-      if (($ax -notmatch '(?m)^\|\s*Field\b.*\|\s*FieldCode\b') -and ($ax -notmatch '(?m)^\|\s*\u5b57\u6bb5.*\|\s*FieldCode\b')) {
+      if (($ax -notmatch '(?m)^\|\s*Field\b.*\|\s*FieldCode\b') -and
+          ($ax -notmatch '(?m)^\|\s*EntityCode\s*\|\s*Field\b.*\|\s*FieldCode\b') -and
+          ($ax -notmatch '(?m)^\|\s*\u5b57\u6bb5.*\|\s*FieldCode\b') -and
+          ($ax -notmatch '(?m)^\|\s*EntityCode\s*\|\s*\u5b57\u6bb5.*\|\s*FieldCode\b')) {
         Add-Issue -Severity "WARN" -Path $appendixPath -Message "Domain-model appendix does not appear to include a Field Dictionary table header"
       }
       if (($ax -notmatch '(?m)^\|\s*Name\s*\|\s*Entity A\b.*\|\s*Entity B\b.*\|') -and ($ax -notmatch '(?m)^\|\s*\u5173\u7cfb\u540d\s*\|')) {
@@ -548,7 +551,13 @@ foreach ($f in $reqFiles) {
       if ($ax -match '(?m)^\|\s*Field\b.*\|\s*FieldCode\b.*\|\s*Meaning\b.*\|\s*Type Candidates') {
         Add-Issue -Severity "ERROR" -Path $appendixPath -Message "consumer-feature appendix appears to include a domain-model Field Dictionary table header. Domain model must live only in Type=domain-model."
       }
+      if ($ax -match '(?m)^\|\s*EntityCode\s*\|\s*Field\b.*\|\s*FieldCode\b.*\|\s*Meaning\b.*\|\s*Type Candidates') {
+        Add-Issue -Severity "ERROR" -Path $appendixPath -Message "consumer-feature appendix appears to include a domain-model Field Dictionary table header. Domain model must live only in Type=domain-model."
+      }
       if ($ax -match '(?m)^\|\s*\u5b57\u6bb5.*\|\s*FieldCode.*\|\s*\u4e1a\u52a1\u542b\u4e49.*\|\s*\u7c7b\u578b\u5019\u9009') {
+        Add-Issue -Severity "ERROR" -Path $appendixPath -Message "consumer-feature appendix appears to include a domain-model Field Dictionary table header. Domain model must live only in Type=domain-model."
+      }
+      if ($ax -match '(?m)^\|\s*EntityCode\s*\|\s*\u5b57\u6bb5.*\|\s*FieldCode.*\|\s*\u4e1a\u52a1\u542b\u4e49.*\|\s*\u7c7b\u578b\u5019\u9009') {
         Add-Issue -Severity "ERROR" -Path $appendixPath -Message "consumer-feature appendix appears to include a domain-model Field Dictionary table header. Domain model must live only in Type=domain-model."
       }
     } elseif ($axType -and ($axType.Trim() -eq "cross-service-contract")) {

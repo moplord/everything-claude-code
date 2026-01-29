@@ -33,6 +33,8 @@ Explicitly reference skills when you want a specific workflow, for example:
 - `$requirements-authoring`
 - `$requirements-audit`
 - `$requirements-system`
+- `$jdl-derivation`
+- `$db-plan`
 
 ## Scope Guardrail
 
