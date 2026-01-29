@@ -119,6 +119,7 @@ Require-File (Join-Path $root "CHANGELOG.md") | Out-Null
 Require-File (Join-Path $root "templates\\REQ-TEMPLATE.md") | Out-Null
 Require-File (Join-Path $root "templates\\ADR-TEMPLATE.md") | Out-Null
 Require-File (Join-Path $root "templates\\ACCEPTANCE-TEMPLATE.md") | Out-Null
+Require-File (Join-Path $root "templates\\APPENDIX-TEMPLATE.md") | Out-Null
 
 $indexPath = Join-Path $root "INDEX.md"
 $indexText = ""
@@ -150,6 +151,23 @@ foreach ($f in $reqFiles) {
     -or ($t -match '(?m)^##\s+.*\u9a8c\u6536\u6807\u51c6')
   if (-not $hasAcceptance) {
     Add-Issue -Severity "ERROR" -Path $p -Message "Missing 'Acceptance Criteria' section"
+  }
+
+  # Appendix file is required (dual-file authoritative spec).
+  $appendixName = [System.IO.Path]::GetFileNameWithoutExtension($f.Name) + "-appendix.md"
+  $appendixPath = Join-Path $root $appendixName
+  if (!(Test-Path $appendixPath)) {
+    Add-Issue -Severity "ERROR" -Path $p -Message ("Missing appendix file: " + $appendixName)
+  } else {
+    $ax = Get-Content -Raw -Encoding UTF8 $appendixPath
+    # Require key tables/sections in appendix to prevent "guessing" later.
+    if ($ax -notmatch '(?m)^##\s+A\.') { Add-Issue -Severity "ERROR" -Path $appendixPath -Message "Appendix missing Domain Model section (A)" }
+    if ($ax -notmatch '(?m)^##\s+B\.') { Add-Issue -Severity "ERROR" -Path $appendixPath -Message "Appendix missing Files section (B)" }
+    if ($ax -notmatch '(?m)^##\s+D\.') { Add-Issue -Severity "ERROR" -Path $appendixPath -Message "Appendix missing Verification & Quality section (D)" }
+    # Guardrail: appendix must not contain generator syntax or CI YAML keys.
+    if ($ax -match '(?im)\\bentity\\b\\s*\\{|\\bapplication\\b\\s*\\{|\\bstages\\s*:\\b|\\bscript\\s*:\\b') {
+      Add-Issue -Severity "ERROR" -Path $appendixPath -Message "Appendix contains implementation/generator syntax (JDL/CI YAML). Keep it requirements-level."
+    }
   }
 
   # Approved must have no open questions.

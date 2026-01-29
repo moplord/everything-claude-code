@@ -29,10 +29,12 @@ requirements/
     REQ-TEMPLATE.md
     ADR-TEMPLATE.md
     ACCEPTANCE-TEMPLATE.md
+    APPENDIX-TEMPLATE.md
   CONVERSATIONS/
   DECISIONS/
   ACCEPTANCE/
   REQ-001-<title>.md
+  REQ-001-<title>-appendix.md
   REQ-002-<title>.md
 ```
 
@@ -64,6 +66,7 @@ Rules:
 - The REQ file is the single source of truth for scope and acceptance.
 - Use SHALL/SHOULD/MAY for requirements language.
 - Explicitly list Non-Goals (to prevent scope creep).
+- The appendix file is equally authoritative, but contains structured, derivation-ready tables.
 
 ### Step 2: Acceptance Criteria Must Be Verifiable
 
@@ -81,6 +84,14 @@ Avoid:
 
 Create `requirements/ACCEPTANCE/REQ-XXX-acceptance.md` from the acceptance template.
 It should map 1:1 to AC items and include an "Evidence" section for later verification.
+
+### Step 3.5: Fill the Appendix (Required for Approval)
+
+Create and maintain `requirements/REQ-XXX-<title>-appendix.md` using the appendix template.
+
+The appendix is still a requirements document (human-readable), but it MUST be structured
+enough to allow downstream generation (JDL/tests/CI) without guessing. It MUST NOT contain
+JDL syntax or CI YAML.
 
 ### Step 4: Record Decisions (ADRs) When Needed
 
