@@ -20,6 +20,24 @@ $ZH_VERSION = [regex]::Unescape('\u7248\u672c')
 $ZH_TYPE = [regex]::Unescape('\u7c7b\u578b')
 $ZH_SERVICE = [regex]::Unescape('\u670d\u52a1')
 $ZH_SERVICE_ALT = [regex]::Unescape('\u5fae\u670d\u52a1')
+$ZH_ENTITY = [regex]::Unescape('\u5b9e\u4f53')
+$ZH_ENTITY_CN = [regex]::Unescape('\u5b9e\u4f53(\u4e2d\u6587)')
+$ZH_CARDINALITY = [regex]::Unescape('\u57fa\u6570')
+$ZH_TYPE_CANDIDATES = [regex]::Unescape('\u7c7b\u578b\u5019\u9009(JDL)')
+$ZH_TYPE_CANDIDATES_ALT = [regex]::Unescape('\u7c7b\u578b\u5019\u9009 (JDL)')
+$ZH_REQUIRED = [regex]::Unescape('\u5fc5\u586b')
+$ZH_UNIQUE_INDEX = [regex]::Unescape('\u552f\u4e00/\u7d22\u5f15')
+$ZH_LEN_PREC_SCALE = [regex]::Unescape('\u957f\u5ea6/\u7cbe\u5ea6/Scale')
+$ZH_VALIDATION_RANGE = [regex]::Unescape('\u6821\u9a8c/\u8303\u56f4')
+$ZH_ENUM_NAME = [regex]::Unescape('\u679a\u4e3e\u540d')
+$ZH_VALUE = [regex]::Unescape('\u503c')
+$ZH_A_ENTITY = [regex]::Unescape('A \u5b9e\u4f53(EntityCode)')
+$ZH_B_ENTITY = [regex]::Unescape('B \u5b9e\u4f53(EntityCode)')
+$ZH_A_FIELD = [regex]::Unescape('A \u4fa7\u5b57\u6bb5(FieldCode)')
+$ZH_A_FIELD_ALT = [regex]::Unescape('A\u4fa7\u5b57\u6bb5(FieldCode)')
+$ZH_B_FIELD = [regex]::Unescape('B \u4fa7\u5b57\u6bb5(FieldCode)')
+$ZH_B_FIELD_ALT = [regex]::Unescape('B\u4fa7\u5b57\u6bb5(FieldCode)')
+$ZH_BIDIRECTIONAL = [regex]::Unescape('\u662f\u5426\u53cc\u5411')
 
 function Count-ReplacementChar {
   param([string]$s)
@@ -75,10 +93,9 @@ function Split-TableLine {
   return @($parts | ForEach-Object { $_.Trim() })
 }
 
-function Parse-MarkdownTablesByHeader {
+function Parse-AllMarkdownTables {
   param(
-    [string]$text,
-    [string[]]$requiredCols
+    [string]$text
   )
 
   $tables = @()
@@ -92,12 +109,6 @@ function Parse-MarkdownTablesByHeader {
     $sepIdx = $i + 1
     if ($sepIdx -ge $lines.Length) { continue }
     if ($lines[$sepIdx] -notmatch '^\s*\|\s*[-: ]+\|') { continue }
-
-    $hasAll = $true
-    foreach ($c in $requiredCols) {
-      if (-not ($hdr -contains $c)) { $hasAll = $false; break }
-    }
-    if (-not $hasAll) { continue }
 
     $colIndex = @{}
     for ($ci = 0; $ci -lt $hdr.Count; $ci++) {
@@ -131,6 +142,47 @@ function Parse-MarkdownTablesByHeader {
   }
 
   return $tables
+}
+
+function Table-HasColumnGroups {
+  param(
+    [string[]]$header,
+    [object[]]$groups
+  )
+  foreach ($g in $groups) {
+    $ok = $false
+    foreach ($name in $g) {
+      if ($header -contains $name) { $ok = $true; break }
+    }
+    if (-not $ok) { return $false }
+  }
+  return $true
+}
+
+function Find-TableByColumnGroups {
+  param(
+    [pscustomobject[]]$tables,
+    [object[]]$groups
+  )
+  foreach ($t in $tables) {
+    if (Table-HasColumnGroups -header $t.header -groups $groups) { return $t }
+  }
+  return $null
+}
+
+function Get-Cell {
+  param(
+    [pscustomobject]$row,
+    [string[]]$names
+  )
+  foreach ($n in $names) {
+    $prop = $row.PSObject.Properties | Where-Object { $_.Name -eq $n } | Select-Object -First 1
+    if ($prop -and $prop.Value -ne $null) {
+      $v = $prop.Value.ToString()
+      if ($v.Trim().Length -gt 0) { return $v }
+    }
+  }
+  return ""
 }
 
 function Require-NonEmpty {
@@ -271,20 +323,20 @@ function Derive-RelationshipBlock {
     [pscustomobject]$r
   )
 
-  $a = Require-NonEmpty -what "Entity A (EntityCode)" -v $r."Entity A (EntityCode)"
-  $b = Require-NonEmpty -what "Entity B (EntityCode)" -v $r."Entity B (EntityCode)"
-  $card = Canonicalize-Cardinality -c $r.Cardinality
+  $a = Require-NonEmpty -what "Entity A (EntityCode)" -v (Get-Cell -row $r -names @("Entity A (EntityCode)", $ZH_A_ENTITY))
+  $b = Require-NonEmpty -what "Entity B (EntityCode)" -v (Get-Cell -row $r -names @("Entity B (EntityCode)", $ZH_B_ENTITY))
+  $card = Canonicalize-Cardinality -c (Get-Cell -row $r -names @("Cardinality", $ZH_CARDINALITY))
 
   if (-not (Is-Valid-Pascal -s $a)) { throw ("Invalid EntityCode for A: " + $a) }
   if (-not (Is-Valid-Pascal -s $b)) { throw ("Invalid EntityCode for B: " + $b) }
 
-  $fieldA = Require-NonEmpty -what "Field On A" -v $r."Field On A"
-  $fieldB = Require-NonEmpty -what "Field On B" -v $r."Field On B"
+  $fieldA = Require-NonEmpty -what "Field On A" -v (Get-Cell -row $r -names @("Field On A", $ZH_A_FIELD, $ZH_A_FIELD_ALT))
+  $fieldB = Require-NonEmpty -what "Field On B" -v (Get-Cell -row $r -names @("Field On B", $ZH_B_FIELD, $ZH_B_FIELD_ALT))
 
   if (-not (Is-Valid-Camel -s $fieldA)) { throw ("Invalid relationship field on A: " + $a + "." + $fieldA) }
   if (-not (Is-Valid-Camel -s $fieldB)) { throw ("Invalid relationship field on B: " + $b + "." + $fieldB) }
 
-  $bidirectional = Normalize-Bool -s $r.Bidirectional
+  $bidirectional = Normalize-Bool -s (Get-Cell -row $r -names @("Bidirectional", $ZH_BIDIRECTIONAL))
 
   # Canonicalize N:1 to 1:N by swapping.
   if ($card -eq "N:1") {
@@ -358,73 +410,82 @@ foreach ($tgt in $targets) {
 
   $appendixText = Read-TextFile -path $tgt.appendix
 
-  $entitiesTbl = Parse-MarkdownTablesByHeader -text $appendixText -requiredCols @("EntityCode(PascalCase)")
-  if ($entitiesTbl.Count -eq 0) {
-    # Accept alternate header label used in templates.
-    $entitiesTbl = Parse-MarkdownTablesByHeader -text $appendixText -requiredCols @("EntityCode")
-  }
-  if ($entitiesTbl.Count -eq 0) { throw ("Missing Entities table with EntityCode column in appendix: " + $tgt.appendix) }
+  $tables = Parse-AllMarkdownTables -text $appendixText
+  $entitiesTbl = Find-TableByColumnGroups -tables $tables -groups @(
+    @("Entity (Display)", $ZH_ENTITY_CN, $ZH_ENTITY),
+    @("EntityCode (PascalCase)", "EntityCode(PascalCase)", "EntityCode")
+  )
+  if (-not $entitiesTbl) { throw ("Missing Entities table with EntityCode column in appendix: " + $tgt.appendix) }
 
   $entities = @()
-  foreach ($row in $entitiesTbl[0].rows) {
-    $ec = $row."EntityCode(PascalCase)"
-    if (-not $ec) { $ec = $row.EntityCode }
+  foreach ($row in $entitiesTbl.rows) {
+    $ec = Get-Cell -row $row -names @("EntityCode (PascalCase)", "EntityCode(PascalCase)", "EntityCode")
     $ec = Require-NonEmpty -what "EntityCode" -v $ec
     if (-not (Is-Valid-Pascal -s $ec)) { throw ("Invalid EntityCode (PascalCase required): " + $ec) }
     $entities += $ec
   }
   $entities = $entities | Select-Object -Unique
 
-  $fieldTbls = Parse-MarkdownTablesByHeader -text $appendixText -requiredCols @("EntityCode", "FieldCode(camelCase)", "Type Candidates (JDL)")
-  if ($fieldTbls.Count -eq 0) {
-    # Accept alternate header label used in templates.
-    $fieldTbls = Parse-MarkdownTablesByHeader -text $appendixText -requiredCols @("EntityCode", "FieldCode", "Type Candidates (JDL)")
-  }
-  if ($fieldTbls.Count -eq 0) { throw ("Missing Field Dictionary table with EntityCode+FieldCode in appendix: " + $tgt.appendix) }
+  $fieldTbl = Find-TableByColumnGroups -tables $tables -groups @(
+    @("EntityCode"),
+    @("FieldCode(camelCase)", "FieldCode (camelCase)", "FieldCode"),
+    @("Type Candidates (JDL)", $ZH_TYPE_CANDIDATES, $ZH_TYPE_CANDIDATES_ALT)
+  )
+  if (-not $fieldTbl) { throw ("Missing Field Dictionary table with EntityCode+FieldCode+Type in appendix: " + $tgt.appendix) }
 
   $fieldsByEntity = @{}
   foreach ($e in $entities) { $fieldsByEntity[$e] = @() }
 
-  foreach ($tbl in $fieldTbls) {
-    foreach ($row in $tbl.rows) {
-      $ec = Require-NonEmpty -what "EntityCode" -v $row.EntityCode
-      if (-not $fieldsByEntity.ContainsKey($ec)) {
-        throw ("Field Dictionary references unknown EntityCode: " + $ec)
-      }
+  foreach ($row in $fieldTbl.rows) {
+    $ec = Require-NonEmpty -what "EntityCode" -v (Get-Cell -row $row -names @("EntityCode"))
+    if (-not $fieldsByEntity.ContainsKey($ec)) { throw ("Field Dictionary references unknown EntityCode: " + $ec) }
 
-      $fc = $row."FieldCode(camelCase)"
-      if (-not $fc) { $fc = $row.FieldCode }
-      $fc = Require-NonEmpty -what ($ec + ".FieldCode") -v $fc
-      if (-not (Is-Valid-Camel -s $fc)) { throw ("Invalid FieldCode (camelCase required): " + $ec + "." + $fc) }
+    $fc = Require-NonEmpty -what ($ec + ".FieldCode") -v (Get-Cell -row $row -names @("FieldCode(camelCase)", "FieldCode (camelCase)", "FieldCode"))
+    if (-not (Is-Valid-Camel -s $fc)) { throw ("Invalid FieldCode (camelCase required): " + $ec + "." + $fc) }
 
-      $jdlType = Pick-JdlType -raw $row."Type Candidates (JDL)"
-      $required = Normalize-YesNo -s $row.Required
-      $opts = Build-FieldOptions -type $jdlType -required $required -uniqueIndexRaw $row."Unique/Index" -lenRaw $row."Length/Precision/Scale" -validationRaw $row."Validation/Range"
+    $typeRaw = Get-Cell -row $row -names @("Type Candidates (JDL)", $ZH_TYPE_CANDIDATES, $ZH_TYPE_CANDIDATES_ALT)
+    $jdlType = Pick-JdlType -raw $typeRaw
 
-      $fieldsByEntity[$ec] += [pscustomobject]@{
-        fieldCode = $fc
-        jdlType = $jdlType
-        options = $opts
-        rawUniqueIndex = $row."Unique/Index"
-      }
+    $requiredRaw = Get-Cell -row $row -names @("Required", $ZH_REQUIRED)
+    $required = Normalize-YesNo -s $requiredRaw
+    $uniqueIndexRaw = Get-Cell -row $row -names @("Unique/Index", $ZH_UNIQUE_INDEX)
+    $lenRaw = Get-Cell -row $row -names @("Length/Precision/Scale", $ZH_LEN_PREC_SCALE)
+    $valRaw = Get-Cell -row $row -names @("Validation/Range", $ZH_VALIDATION_RANGE)
+
+    $opts = Build-FieldOptions -type $jdlType -required $required -uniqueIndexRaw $uniqueIndexRaw -lenRaw $lenRaw -validationRaw $valRaw
+
+    $fieldsByEntity[$ec] += [pscustomobject]@{
+      fieldCode = $fc
+      jdlType = $jdlType
+      options = $opts
+      rawUniqueIndex = $uniqueIndexRaw
     }
   }
 
-  $enumTbls = Parse-MarkdownTablesByHeader -text $appendixText -requiredCols @("Enum", "Value")
+  $enumTbl = Find-TableByColumnGroups -tables $tables -groups @(
+    @("Enum", $ZH_ENUM_NAME),
+    @("Value", $ZH_VALUE)
+  )
   $enums = @{}
-  foreach ($tbl in $enumTbls) {
-    foreach ($row in $tbl.rows) {
-      $enumName = Require-NonEmpty -what "Enum" -v $row.Enum
-      $val = Require-NonEmpty -what ("Enum " + $enumName + " Value") -v $row.Value
+  if ($enumTbl) {
+    foreach ($row in $enumTbl.rows) {
+      $enumName = Require-NonEmpty -what "Enum" -v (Get-Cell -row $row -names @("Enum", $ZH_ENUM_NAME))
+      $val = Require-NonEmpty -what ("Enum " + $enumName + " Value") -v (Get-Cell -row $row -names @("Value", $ZH_VALUE))
       if (-not $enums.ContainsKey($enumName)) { $enums[$enumName] = @() }
       $enums[$enumName] += $val
     }
   }
 
-  $relTbls = Parse-MarkdownTablesByHeader -text $appendixText -requiredCols @("Entity A (EntityCode)", "Entity B (EntityCode)", "Cardinality", "Field On A", "Field On B")
+  $relTbl = Find-TableByColumnGroups -tables $tables -groups @(
+    @("Entity A (EntityCode)", $ZH_A_ENTITY),
+    @("Entity B (EntityCode)", $ZH_B_ENTITY),
+    @("Cardinality", $ZH_CARDINALITY),
+    @("Field On A", $ZH_A_FIELD, $ZH_A_FIELD_ALT),
+    @("Field On B", $ZH_B_FIELD, $ZH_B_FIELD_ALT)
+  )
   $relByKind = @{}
-  foreach ($tbl in $relTbls) {
-    foreach ($row in $tbl.rows) {
+  if ($relTbl) {
+    foreach ($row in $relTbl.rows) {
       $rel = Derive-RelationshipBlock -r $row
       if (-not $relByKind.ContainsKey($rel.kind)) { $relByKind[$rel.kind] = @() }
       $relByKind[$rel.kind] += $rel.line
@@ -471,4 +532,3 @@ foreach ($tgt in $targets) {
   Set-Content -NoNewline -Encoding UTF8 -Path $outPath -Value ($out -join "`n")
   Write-Host ("Wrote JDL: " + $outPath)
 }
-
