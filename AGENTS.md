@@ -36,6 +36,7 @@ Explicitly reference skills when you want a specific workflow, for example:
 - `$jdl-derivation`
 - `$db-plan`
 - `$jhipster-scaffold`
+- `$jhipster-codegen`
 - `$module-pack`
 
 ## Scope Guardrail
