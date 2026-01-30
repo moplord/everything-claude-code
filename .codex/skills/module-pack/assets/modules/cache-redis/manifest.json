@@ -1,0 +1,8 @@
+{
+  "name": "cache-redis",
+  "description": "Redis cache wiring (Spring Data Redis + config stub).",
+  "mavenDependencies": [
+    { "groupId": "org.springframework.boot", "artifactId": "spring-boot-starter-data-redis", "version": "", "scope": "" }
+  ]
+}
+

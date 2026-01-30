@@ -1,0 +1,6 @@
+{
+  "name": "quality-sonarqube",
+  "description": "SonarQube baseline config (sonar-project.properties stub).",
+  "mavenDependencies": []
+}
+

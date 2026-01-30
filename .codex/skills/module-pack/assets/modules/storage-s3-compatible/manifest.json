@@ -1,0 +1,8 @@
+{
+  "name": "storage-s3-compatible",
+  "description": "S3-compatible object storage (S3/OSS/MinIO) client wiring + config stub (no vendor lock-in).",
+  "mavenDependencies": [
+    { "groupId": "software.amazon.awssdk", "artifactId": "s3", "version": "", "scope": "" }
+  ]
+}
+

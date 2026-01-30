@@ -1,0 +1,7 @@
+# Scheduled jobs baseline switches.
+
+codex:
+  jobs:
+    enabled: false
+    timezone: "UTC"
+

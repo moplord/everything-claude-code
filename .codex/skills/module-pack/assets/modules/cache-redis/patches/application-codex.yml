@@ -1,0 +1,14 @@
+# Redis cache config stub (DB-agnostic; provider chosen by deployment).
+
+codex:
+  cache:
+    redis:
+      enabled: false
+      host: "localhost"
+      port: 6379
+      username: ""
+      password: ""
+      ssl: false
+      database: 0
+      defaultTtlSeconds: 300
+
