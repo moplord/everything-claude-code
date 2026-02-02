@@ -1,4 +1,4 @@
-# OpenCode 从零到可用：全流程说明（全局级 + 项目级 + 历史对话导出）
+﻿# OpenCode 从零到可用：全流程说明（全局级 + 项目级 + 历史对话导出）
 
 本文档把“这件事从头到尾”完整说明清楚：我们做了什么、为什么这么做、文件/目录在哪、哪些是全局配置、哪些是项目配置、如何验证是否生效、如何导出历史对话到单一文件、以及常见坑位。
 
@@ -271,6 +271,27 @@ opencode debug config
 
 ---
 
+## 8.1 仓库层面的版本化与远端同步（你在 GitHub 上能看到什么）
+
+本项目远端仓库（origin）为：
+
+- `git@github.com:moplord/everything-claude-code.git`
+
+说明：
+
+- **全局级配置**写在你本机目录：`C:\Users\admin\.config\opencode\opencode.json`，它不属于仓库文件，因此不会出现在 GitHub。
+- **仓库内（项目级）资产**与**本说明文档**属于仓库内容，已经提交并推送到远端。
+
+如何在本机确认远端已同步：
+
+```powershell
+cd D:\Code\everything-claude-code-1.1.0
+git status -sb
+git log -5 --oneline --decorate
+```
+
+---
+
 ## 9. 你要我继续补齐什么（下一步选项）
 
 如果你说“全局还不够”，通常还差三类：
@@ -280,4 +301,3 @@ opencode debug config
 3) **MCP 启用策略**（默认关闭；你希望哪些默认开启、哪些按项目开启）
 
 你直接告诉我你希望“全局默认 agent 是哪个”、“哪些 MCP 要全局开启”，我就按你的偏好把全局 `opencode.json` 再补齐。
-
