@@ -1,0 +1,182 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["AGENTS.md", ".opencode/rules/*.md"],
+  "skills": {
+    "paths": [".opencode/skills"]
+  },
+  "permission": {
+    "*": "allow",
+    "read": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow"
+    },
+    "edit": "allow",
+    "bash": {
+      "*": "ask",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "git show*": "allow",
+      "git blame*": "allow",
+      "git rev-parse*": "allow",
+      "git ls-files*": "allow",
+      "rg*": "allow",
+      "dd*": "deny",
+      "mkfs*": "deny",
+      "mkfs.*": "deny",
+      "diskpart*": "deny",
+      "format *": "deny",
+      "shutdown*": "deny",
+      "reboot*": "deny",
+      "poweroff*": "deny",
+      "rm -rf /": "deny",
+      "rm -rf /*": "deny",
+      "rm -rf ~": "deny",
+      "rm -rf ~*": "deny",
+      "git reset --hard*": "ask",
+      "git clean -fdx*": "ask",
+      "git branch -d *": "ask",
+      "git branch -D *": "ask",
+      "git push*": "ask",
+      "git fetch*": "ask",
+      "git pull*": "ask",
+      "git clone*": "ask",
+      "git submodule update*": "ask",
+      "git submodule sync*": "ask",
+      "npm*": "ask",
+      "pnpm*": "ask",
+      "yarn*": "ask",
+      "pip*": "ask",
+      "pip3*": "ask",
+      "poetry*": "ask",
+      "mvn*": "ask",
+      "mvnw*": "ask",
+      "gradle*": "ask",
+      "gradlew*": "ask",
+      "docker login*": "ask",
+      "docker logout*": "ask",
+      "docker pull*": "ask",
+      "docker push*": "ask",
+      "kubectl*": "ask",
+      "helm*": "ask",
+      "gh*": "ask",
+      "glab*": "ask"
+    }
+  },
+  "mcp": {
+    "semgrep": {
+      "type": "remote",
+      "url": "https://mcp.semgrep.ai/mcp",
+      "enabled": false
+    },
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "enabled": false,
+      "headers": {
+        "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
+      }
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "enabled": false,
+      "timeout": 60000,
+      "command": ["cmd", "/c", "npx", "-y", "chrome-devtools-mcp@latest"],
+      "environment": {
+        "SystemRoot": "C:\\Windows",
+        "PROGRAMFILES": "C:\\Program Files"
+      }
+    },
+    "ppt": {
+      "type": "local",
+      "enabled": false,
+      "timeout": 60000,
+      "command": ["{env:PPT_MCP_PYTHON}", "{env:PPT_MCP_SERVER}"],
+      "environment": {}
+    },
+    "github": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
+      "environment": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "firecrawl": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "firecrawl-mcp"],
+      "environment": {
+        "FIRECRAWL_API_KEY": "{env:FIRECRAWL_API_KEY}"
+      }
+    },
+    "supabase": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@supabase/mcp-server-supabase@latest", "--project-ref=YOUR_PROJECT_REF"]
+    },
+    "memory": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@modelcontextprotocol/server-memory"]
+    },
+    "sequential-thinking": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "vercel": {
+      "type": "remote",
+      "enabled": false,
+      "url": "https://mcp.vercel.com"
+    },
+    "railway": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@railway/mcp-server"]
+    },
+    "cloudflare-docs": {
+      "type": "remote",
+      "enabled": false,
+      "url": "https://docs.mcp.cloudflare.com/mcp"
+    },
+    "cloudflare-workers-builds": {
+      "type": "remote",
+      "enabled": false,
+      "url": "https://builds.mcp.cloudflare.com/mcp"
+    },
+    "cloudflare-workers-bindings": {
+      "type": "remote",
+      "enabled": false,
+      "url": "https://bindings.mcp.cloudflare.com/mcp"
+    },
+    "cloudflare-observability": {
+      "type": "remote",
+      "enabled": false,
+      "url": "https://observability.mcp.cloudflare.com/mcp"
+    },
+    "clickhouse": {
+      "type": "remote",
+      "enabled": false,
+      "url": "https://mcp.clickhouse.cloud/mcp"
+    },
+    "context7-npx": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@context7/mcp-server"]
+    },
+    "magic": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@magicuidesign/mcp@latest"]
+    },
+    "filesystem": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/projects"]
+    }
+  }
+}
+
