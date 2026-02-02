@@ -29,6 +29,7 @@ codex-history.jsonl
 codex-tui.log
 codex-sessions/
 codex-archived_sessions/
+CHATLOG_FULL.md
 
 # Personal configs (if any)
 personal/
