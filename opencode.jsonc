@@ -2,36 +2,124 @@
   // Project-level OpenCode config.
   // Docs: https://opencode.ai/docs
 
-  "$schema": "https://opencode.ai/schema.json",
+  "$schema": "https://opencode.ai/config.json",
 
-  // Prefer repository-local instructions.
-  "instructions": [
-    "AGENTS.md",
-    ".opencode/rules/*.md"
-  ],
+  // Prefer repository-local instructions. (AGENTS.md is loaded automatically by OpenCode.)
+  "instructions": [".opencode/rules/*.md"],
+
+  // Ensure OpenCode finds project-local skills even if defaults change.
+  "skills": {
+    "paths": [".opencode/skills"]
+  },
 
   // Optional MCP server definitions (placeholders; configure secrets via env vars).
   // You can also put these in your global OpenCode config and omit them here.
   "mcp": {
     "semgrep": {
       "type": "remote",
-      "url": "https://mcp.semgrep.ai/mcp"
+      "url": "https://mcp.semgrep.ai/mcp",
+      "enabled": false
     },
     "context7": {
       "type": "remote",
       "url": "https://mcp.context7.com/mcp",
+      "enabled": false,
       "headers": {
-        "CONTEXT7_API_KEY": "YOUR_CONTEXT7_API_KEY"
+        "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
       }
     },
     "chrome-devtools": {
       "type": "local",
+      "enabled": false,
       "command": ["cmd", "/c", "npx", "-y", "chrome-devtools-mcp@latest"]
     },
     "ppt": {
       "type": "local",
+      "enabled": false,
       "command": ["python", "C:\\\\path\\\\to\\\\ppt_mcp_server.py"]
+    },
+
+    // Migrated from legacy/claude-code/mcp-configs/mcp-servers.json
+    "github": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
+      "environment": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "firecrawl": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "firecrawl-mcp"],
+      "environment": {
+        "FIRECRAWL_API_KEY": "{env:FIRECRAWL_API_KEY}"
+      }
+    },
+    "supabase": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@supabase/mcp-server-supabase@latest", "--project-ref=YOUR_PROJECT_REF"]
+    },
+    "memory": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@modelcontextprotocol/server-memory"]
+    },
+    "sequential-thinking": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "vercel": {
+      "type": "remote",
+      "enabled": false,
+      "url": "https://mcp.vercel.com"
+    },
+    "railway": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@railway/mcp-server"]
+    },
+    "cloudflare-docs": {
+      "type": "remote",
+      "enabled": false,
+      "url": "https://docs.mcp.cloudflare.com/mcp"
+    },
+    "cloudflare-workers-builds": {
+      "type": "remote",
+      "enabled": false,
+      "url": "https://builds.mcp.cloudflare.com/mcp"
+    },
+    "cloudflare-workers-bindings": {
+      "type": "remote",
+      "enabled": false,
+      "url": "https://bindings.mcp.cloudflare.com/mcp"
+    },
+    "cloudflare-observability": {
+      "type": "remote",
+      "enabled": false,
+      "url": "https://observability.mcp.cloudflare.com/mcp"
+    },
+    "clickhouse": {
+      "type": "remote",
+      "enabled": false,
+      "url": "https://mcp.clickhouse.cloud/mcp"
+    },
+    "context7-npx": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@context7/mcp-server"]
+    },
+    "magic": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@magicuidesign/mcp@latest"]
+    },
+    "filesystem": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/projects"]
     }
   }
 }
-
