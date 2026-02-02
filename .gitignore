@@ -24,6 +24,7 @@ node_modules/
 # OpenCode local state
 .opencode/state/
 .opencode/sessions/
+CHATLOG.ndjson
 
 # Personal configs (if any)
 personal/
