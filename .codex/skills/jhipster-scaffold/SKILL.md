@@ -21,13 +21,17 @@ Non-goals:
 These are project-specific and must be supplied at generation time:
 - `BaseName` (app name)
 - `PackageName` (Java package)
-- `OidcIssuerUri` (OIDC issuer URL)
-- `OidcClientId` (client id)
+- `AuthProfile` (`oidc` or `local-jwt`)
+- If `AuthProfile=oidc`:
+  - `OidcIssuerUri` (OIDC issuer URL)
+  - `OidcClientId` (client id)
 
 Fixed defaults for the current baseline:
 - monolith
 - Vue3 client
-- oauth2-oidc auth
+- Auth:
+  - `oidc` -> JHipster `oauth2`
+  - `local-jwt` -> JHipster `jwt`
 - Maven build
 - PostgreSQL
 - no i18n
@@ -48,6 +52,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<path-to-skill>/scripts/sca
   -OutDir "<target-project-dir>" `
   -BaseName "mall" `
   -PackageName "com.company.mall" `
+  -AuthProfile "oidc" `
   -OidcIssuerUri "https://idp.example.com/realms/mall" `
   -OidcClientId "mall-web"
 ```

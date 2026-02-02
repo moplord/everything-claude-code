@@ -22,9 +22,10 @@ Non-goals:
 You provide:
 - `TargetDir`: where the code should be generated
 - `JhipsterVersion`: the `generator-jhipster` npm version to run (example: `8.6.0`)
+- `AuthProfile`: `oidc` (external OIDC provider) or `local-jwt` (built-in JHipster JWT)
 - `App JDL`:
   - either provide `-AppJdlPath`, or
-  - let the script generate a minimal `app.jdl` from `BaseName/PackageName/OIDC/...`
+  - let the script generate a minimal `app.jdl` from `BaseName/PackageName/AuthProfile/...`
 - `Entity JDLs`: either `-JdlDir` (folder) or explicit `-JdlFiles` list
 
 ## Output
@@ -38,6 +39,7 @@ You provide:
 powershell -NoProfile -ExecutionPolicy Bypass -File "<path-to-skill>/scripts/jhipster-import-jdl.ps1" `
   -TargetDir "D:\Code\my-app" `
   -JhipsterVersion "8.6.0" `
+  -AuthProfile "oidc" `
   -BaseName "mall" `
   -PackageName "com.company.mall" `
   -OidcIssuerUri "https://idp.example.com/realms/mall" `

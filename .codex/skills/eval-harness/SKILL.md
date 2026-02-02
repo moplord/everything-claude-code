@@ -1,11 +1,12 @@
 ---
 name: eval-harness
-description: Formal evaluation framework for Codex-driven work implementing eval-driven development (EDD) with deterministic graders and pass@k style tracking.
+description: Formal evaluation framework for Claude Code sessions implementing eval-driven development (EDD) principles
+tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
 # Eval Harness Skill
 
-A formal evaluation framework for Codex-driven work, implementing eval-driven development (EDD) principles.
+A formal evaluation framework for Claude Code sessions, implementing eval-driven development (EDD) principles.
 
 ## Philosophy
 
@@ -18,10 +19,10 @@ Eval-Driven Development treats evals as the "unit tests of AI development":
 ## Eval Types
 
 ### Capability Evals
-Test if the system can do something it couldn't before:
+Test if Claude can do something it couldn't before:
 ```markdown
 [CAPABILITY EVAL: feature-name]
-Task: Description of what should be accomplished
+Task: Description of what Claude should accomplish
 Success Criteria:
   - [ ] Criterion 1
   - [ ] Criterion 2
@@ -57,7 +58,7 @@ npm run build && echo "PASS" || echo "FAIL"
 ```
 
 ### 2. Model-Based Grader
-Use a model-based grader to evaluate open-ended outputs:
+Use Claude to evaluate open-ended outputs:
 ```markdown
 [MODEL GRADER PROMPT]
 Evaluate the following code change:
@@ -155,20 +156,28 @@ Status: READY FOR REVIEW
 ## Integration Patterns
 
 ### Pre-Implementation
-Create an eval definition file in your repo, for example:
-- `.codex/evals/feature-name.md`
+```
+/eval define feature-name
+```
+Creates eval definition file at `.claude/evals/feature-name.md`
 
 ### During Implementation
-Re-run the deterministic graders (tests/build/typecheck/lint) and update the eval status in the same file.
+```
+/eval check feature-name
+```
+Runs current evals and reports status
 
 ### Post-Implementation
-Produce an eval report section (pass@k, regressions) in `.codex/evals/feature-name.md` or in the PR description.
+```
+/eval report feature-name
+```
+Generates full eval report
 
 ## Eval Storage
 
 Store evals in project:
 ```
-.codex/
+.claude/
   evals/
     feature-xyz.md      # Eval definition
     feature-xyz.log     # Eval run history
@@ -207,7 +216,7 @@ Regression Evals:
 [Write code]
 
 ### Phase 3: Evaluate
-Re-run the graders and update the checklist in your eval file.
+Run: /eval check add-authentication
 
 ### Phase 4: Report
 EVAL REPORT: add-authentication

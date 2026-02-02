@@ -1,11 +1,6 @@
----
-name: verification-loop
-description: Run a deterministic verification checklist (build, types, lint, tests, security, diff review) before PRs or after significant changes.
----
+# Verification Loop Skill
 
-# Verification Loop
-
-A comprehensive verification checklist for Codex-driven development.
+A comprehensive verification system for Claude Code sessions.
 
 ## When to Use
 
@@ -115,6 +110,11 @@ Set a mental checkpoint:
 - After completing each function
 - After finishing a component
 - Before moving to next task
+
+Run: /verify
 ```
 
-Run the phases in this document and record a short verification report in your PR/issue notes.
+## Integration with Hooks
+
+This skill complements PostToolUse hooks but provides deeper verification.
+Hooks catch issues immediately; this skill provides comprehensive review.

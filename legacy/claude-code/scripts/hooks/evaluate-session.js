@@ -24,10 +24,7 @@ const {
 async function main() {
   // Get script directory to find config
   const scriptDir = __dirname;
-  // Codex-first refactor: skills live in ".codex/skills". Keep legacy fallback for older layouts.
-  const codexConfigFile = path.join(scriptDir, '..', '..', '.codex', 'skills', 'continuous-learning', 'config.json');
-  const legacyConfigFile = path.join(scriptDir, '..', '..', 'skills', 'continuous-learning', 'config.json');
-  const configFile = fs.existsSync(codexConfigFile) ? codexConfigFile : legacyConfigFile;
+  const configFile = path.join(scriptDir, '..', '..', 'skills', 'continuous-learning', 'config.json');
 
   // Default configuration
   let minSessionLength = 10;
