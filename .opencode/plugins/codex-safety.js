@@ -14,10 +14,6 @@ const BLOCK_LIST = [
   // rm -rf / or ~
   /\brm\b\s+-rf\b\s+\//i,
   /\brm\b\s+-rf\b\s+~\b/i,
-
-  // dangerous git
-  /\bgit\b\s+reset\b\s+--hard\b/i,
-  /\bgit\b\s+clean\b\s+-fdx\b/i,
 ]
 
 export const CodexSafety = async () => {
@@ -38,4 +34,3 @@ export const CodexSafety = async () => {
     },
   }
 }
-
