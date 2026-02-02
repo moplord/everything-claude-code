@@ -1,43 +1,191 @@
-# Contributing
+# Contributing to Everything Claude Code
 
-This repository is organized for Codex-first usage.
+Thanks for wanting to contribute. This repo is meant to be a community resource for Claude Code users.
 
-## What To Contribute
+## What We're Looking For
 
-- New or improved Codex skills under `.codex/skills/<skill-name>/SKILL.md`
+### Agents
 
-Keep skills small, focused, and actionable.
+New agents that handle specific tasks well:
+- Language-specific reviewers (Python, Go, Rust)
+- Framework experts (Django, Rails, Laravel, Spring)
+- DevOps specialists (Kubernetes, Terraform, CI/CD)
+- Domain experts (ML pipelines, data engineering, mobile)
 
-## Skill Format
+### Skills
 
-Each skill must have a `SKILL.md` with YAML frontmatter containing at least:
+Workflow definitions and domain knowledge:
+- Language best practices
+- Framework patterns
+- Testing strategies
+- Architecture guides
+- Domain-specific knowledge
 
-```yaml
+### Commands
+
+Slash commands that invoke useful workflows:
+- Deployment commands
+- Testing commands
+- Documentation commands
+- Code generation commands
+
+### Hooks
+
+Useful automations:
+- Linting/formatting hooks
+- Security checks
+- Validation hooks
+- Notification hooks
+
+### Rules
+
+Always-follow guidelines:
+- Security rules
+- Code style rules
+- Testing requirements
+- Naming conventions
+
+### MCP Configurations
+
+New or improved MCP server configs:
+- Database integrations
+- Cloud provider MCPs
+- Monitoring tools
+- Communication tools
+
 ---
-name: your-skill-name
-description: When to use this skill and what it does
+
+## How to Contribute
+
+### 1. Fork the repo
+
+```bash
+git clone https://github.com/YOUR_USERNAME/everything-claude-code.git
+cd everything-claude-code
+```
+
+### 2. Create a branch
+
+```bash
+git checkout -b add-python-reviewer
+```
+
+### 3. Add your contribution
+
+Place files in the appropriate directory:
+- `agents/` for new agents
+- `skills/` for skills (can be single .md or directory)
+- `commands/` for slash commands
+- `rules/` for rule files
+- `hooks/` for hook configurations
+- `mcp-configs/` for MCP server configs
+
+### 4. Follow the format
+
+**Agents** should have frontmatter:
+
+```markdown
 ---
+name: agent-name
+description: What it does
+tools: Read, Grep, Glob, Bash
+model: sonnet
+---
+
+Instructions here...
 ```
 
-Notes:
-- Keep the `description` trigger-oriented (when/why you would use it).
-- Extra YAML keys are allowed but should be used sparingly.
+**Skills** should be clear and actionable:
 
-## Directory Layout
+```markdown
+# Skill Name
 
+## When to Use
+
+...
+
+## How It Works
+
+...
+
+## Examples
+
+...
 ```
-.codex/
-  skills/
-    your-skill-name/
-      SKILL.md
-      scripts/        (optional)
-      references/     (optional)
-      assets/         (optional)
+
+**Commands** should explain what they do:
+
+```markdown
+---
+description: Brief description of command
+---
+
+# Command Name
+
+Detailed instructions...
 ```
 
-## Hygiene
+**Hooks** should include descriptions:
 
-- Do not commit secrets or credentials.
-- Prefer ASCII in new files.
-- Validate changes with a quick read-through: triggers, steps, and examples should be consistent.
+```json
+{
+  "matcher": "...",
+  "hooks": [...],
+  "description": "What this hook does"
+}
+```
 
+### 5. Test your contribution
+
+Make sure your config works with Claude Code before submitting.
+
+### 6. Submit a PR
+
+```bash
+git add .
+git commit -m "Add Python code reviewer agent"
+git push origin add-python-reviewer
+```
+
+Then open a PR with:
+- What you added
+- Why it's useful
+- How you tested it
+
+---
+
+## Guidelines
+
+### Do
+
+- Keep configs focused and modular
+- Include clear descriptions
+- Test before submitting
+- Follow existing patterns
+- Document any dependencies
+
+### Don't
+
+- Include sensitive data (API keys, tokens, paths)
+- Add overly complex or niche configs
+- Submit untested configs
+- Create duplicate functionality
+- Add configs that require specific paid services without alternatives
+
+---
+
+## File Naming
+
+- Use lowercase with hyphens: `python-reviewer.md`
+- Be descriptive: `tdd-workflow.md` not `workflow.md`
+- Match the agent/skill name to the filename
+
+---
+
+## Questions?
+
+Open an issue or reach out on X: [@affaanmustafa](https://x.com/affaanmustafa)
+
+---
+
+Thanks for contributing. Let's build a great resource together.
