@@ -1,3 +1,9 @@
+﻿---
+description: Refactor Clean
+agent: refactor-cleaner
+---
+
+User request: $ARGUMENTS
 # Refactor Clean
 
 Safely identify and remove dead code with test verification:

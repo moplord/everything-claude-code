@@ -1,3 +1,9 @@
+﻿---
+description: Build and Fix
+agent: build-error-resolver
+---
+
+User request: $ARGUMENTS
 # Build and Fix
 
 Incrementally fix TypeScript and build errors:

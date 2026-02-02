@@ -1,3 +1,9 @@
+﻿---
+description: Update Documentation
+agent: doc-updater
+---
+
+User request: $ARGUMENTS
 # Update Documentation
 
 Sync documentation from source-of-truth:

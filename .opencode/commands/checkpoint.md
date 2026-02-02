@@ -1,3 +1,9 @@
+﻿---
+description: Checkpoint Command
+agent: planner
+---
+
+User request: $ARGUMENTS
 # Checkpoint Command
 
 Create or verify a checkpoint in your workflow.

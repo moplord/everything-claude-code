@@ -1,9 +1,11 @@
----
+﻿---
 name: instinct-export
 description: Export instincts for sharing with teammates or other projects
 command: /instinct-export
+agent: planner
 ---
 
+User request: $ARGUMENTS
 # Instinct Export Command
 
 Exports instincts to a shareable format. Perfect for:

@@ -1,7 +1,9 @@
----
+﻿---
 description: Enforce test-driven development workflow. Scaffold interfaces, generate tests FIRST, then implement minimal code to pass. Ensure 80%+ coverage.
+agent: tdd-guide
 ---
 
+User request: $ARGUMENTS
 # TDD Command
 
 This command invokes the **tdd-guide** agent to enforce test-driven development methodology.

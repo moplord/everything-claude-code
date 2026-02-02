@@ -1,7 +1,9 @@
----
+﻿---
 description: Comprehensive Python code review for PEP 8 compliance, type hints, security, and Pythonic idioms. Invokes the python-reviewer agent.
+agent: python-reviewer
 ---
 
+User request: $ARGUMENTS
 # Python Code Review
 
 This command invokes the **python-reviewer** agent for comprehensive Python-specific code review.

@@ -1,3 +1,9 @@
+﻿---
+description: Verification Command
+agent: security-reviewer
+---
+
+User request: $ARGUMENTS
 # Verification Command
 
 Run comprehensive verification on current codebase state.

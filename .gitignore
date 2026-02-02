@@ -21,6 +21,10 @@ Thumbs.db
 # Node
 node_modules/
 
+# OpenCode local state
+.opencode/state/
+.opencode/sessions/
+
 # Personal configs (if any)
 personal/
 private/

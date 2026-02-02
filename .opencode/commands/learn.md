@@ -1,3 +1,9 @@
+﻿---
+description: /learn - Extract Reusable Patterns
+agent: planner
+---
+
+User request: $ARGUMENTS
 # /learn - Extract Reusable Patterns
 
 Analyze the current session and extract any patterns worth saving as skills.

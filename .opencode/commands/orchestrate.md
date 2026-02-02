@@ -1,3 +1,9 @@
+﻿---
+description: Orchestrate Command
+agent: planner
+---
+
+User request: $ARGUMENTS
 # Orchestrate Command
 
 Sequential agent workflow for complex tasks.

@@ -1,3 +1,9 @@
+﻿---
+description: Code Review
+agent: code-reviewer
+---
+
+User request: $ARGUMENTS
 # Code Review
 
 Comprehensive security and quality review of uncommitted changes:

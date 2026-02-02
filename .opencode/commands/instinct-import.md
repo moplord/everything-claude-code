@@ -1,9 +1,11 @@
----
+﻿---
 name: instinct-import
 description: Import instincts from teammates, Skill Creator, or other sources
 command: true
+agent: planner
 ---
 
+User request: $ARGUMENTS
 # Instinct Import Command
 
 ## Implementation

@@ -1,3 +1,9 @@
+﻿---
+description: Eval Command
+agent: planner
+---
+
+User request: $ARGUMENTS
 # Eval Command
 
 Manage eval-driven development workflow.

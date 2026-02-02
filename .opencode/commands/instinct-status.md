@@ -1,9 +1,11 @@
----
+﻿---
 name: instinct-status
 description: Show all learned instincts with their confidence levels
 command: true
+agent: planner
 ---
 
+User request: $ARGUMENTS
 # Instinct Status Command
 
 Shows all learned instincts with their confidence scores, grouped by domain.

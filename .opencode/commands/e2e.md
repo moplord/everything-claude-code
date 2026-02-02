@@ -1,7 +1,9 @@
----
+﻿---
 description: Generate and run end-to-end tests with Playwright. Creates test journeys, runs tests, captures screenshots/videos/traces, and uploads artifacts.
+agent: e2e-runner
 ---
 
+User request: $ARGUMENTS
 # E2E Command
 
 This command invokes the **e2e-runner** agent to generate, maintain, and execute end-to-end tests using Playwright.

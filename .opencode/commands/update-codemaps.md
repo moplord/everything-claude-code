@@ -1,3 +1,9 @@
+﻿---
+description: Update Codemaps
+agent: doc-updater
+---
+
+User request: $ARGUMENTS
 # Update Codemaps
 
 Analyze the codebase structure and update architecture documentation:

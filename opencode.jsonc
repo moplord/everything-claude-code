@@ -12,6 +12,15 @@
     "paths": [".opencode/skills"]
   },
 
+  // Permissions: OpenCode prompts for potentially risky operations.
+  // Adjust to your preference (ask/allow/deny).
+  "permission": {
+    "*": "ask",
+    "read": "allow",
+    "edit": "ask",
+    "bash": "ask"
+  },
+
   // Optional MCP server definitions (placeholders; configure secrets via env vars).
   // You can also put these in your global OpenCode config and omit them here.
   "mcp": {
@@ -31,12 +40,22 @@
     "chrome-devtools": {
       "type": "local",
       "enabled": false,
-      "command": ["cmd", "/c", "npx", "-y", "chrome-devtools-mcp@latest"]
+      "timeout": 60000,
+      "command": ["cmd", "/c", "npx", "-y", "chrome-devtools-mcp@latest"],
+      "environment": {
+        "SystemRoot": "C:\\\\Windows",
+        "PROGRAMFILES": "C:\\\\Program Files"
+      }
     },
     "ppt": {
       "type": "local",
       "enabled": false,
-      "command": ["python", "C:\\\\path\\\\to\\\\ppt_mcp_server.py"]
+      "timeout": 60000,
+      "command": [
+        "C:\\\\Users\\\\admin\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python311\\\\python.exe",
+        "C:\\\\Users\\\\admin\\\\AppData\\\\Local\\\\mcp\\\\Office-PowerPoint-MCP-Server\\\\ppt_mcp_server.py"
+      ],
+      "environment": {}
     },
 
     // Migrated from legacy/claude-code/mcp-configs/mcp-servers.json

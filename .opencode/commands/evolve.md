@@ -1,9 +1,11 @@
----
+﻿---
 name: evolve
 description: Cluster related instincts into skills, commands, or agents
 command: true
+agent: architect
 ---
 
+User request: $ARGUMENTS
 # Evolve Command
 
 ## Implementation
