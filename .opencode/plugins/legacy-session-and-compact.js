@@ -31,6 +31,10 @@ function writeText(p, t) {
   fs.writeFileSync(p, t, "utf8")
 }
 
+function appendText(p, t) {
+  fs.appendFileSync(p, t, "utf8")
+}
+
 function replaceLine(text, re, replacement) {
   const lines = text.split(/\r?\n/)
   let changed = false
@@ -47,6 +51,7 @@ function replaceLine(text, re, replacement) {
 export const LegacySessionAndCompact = async ({ directory }) => {
   const stateDir = path.join(directory, ".opencode", "state")
   const sessionsDir = path.join(directory, ".opencode", "sessions")
+  const compactionLog = path.join(sessionsDir, "compaction-log.txt")
   ensureDir(stateDir)
   ensureDir(sessionsDir)
 
@@ -119,6 +124,30 @@ export const LegacySessionAndCompact = async ({ directory }) => {
     "tool.execute.after": async () => {
       bumpToolCount()
     },
+
+    // Preserve continuity through compaction by injecting the current session notes.
+    // This is the OpenCode equivalent of Claude Code's PreCompact hook.
+    "experimental.session.compacting": async ({ output }) => {
+      try {
+        touchSessionFile()
+        const now = new Date()
+        const ts = `${dateString(now)} ${timeString(now)}`
+        appendText(compactionLog, `[${ts}] Context compaction triggered\n`)
+
+        const snapshot = readText(sessionFile)
+        if (output && Array.isArray(output.context) && snapshot) {
+          // Keep it bounded to avoid ballooning the compacted context.
+          const bounded = snapshot.length > 15000 ? snapshot.slice(-15000) : snapshot
+          output.context.push({
+            type: "text",
+            text:
+              "Session continuity notes (auto-injected before compaction):\n\n" +
+              bounded,
+          })
+        }
+      } catch {
+        // Best-effort; never block compaction.
+      }
+    },
   }
 }
-
