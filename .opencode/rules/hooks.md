@@ -1,46 +1,41 @@
-# Hooks System
+# Hooks / Plugins System (OpenCode)
 
-## Hook Types
+OpenCode uses a **plugin system** instead of Claude Code hooks.
+This repo implements hook-equivalents in `.opencode/plugins/`.
 
-- **PreToolUse**: Before tool execution (validation, parameter modification)
-- **PostToolUse**: After tool execution (auto-format, checks)
-- **Stop**: When session ends (final verification)
+## Where It Lives
 
-## Current Hooks (in ~/.claude/settings.json)
+- Plugins: `.opencode/plugins/*.js`
+- Config/permissions: `opencode.jsonc` (project-level OpenCode config)
 
-### PreToolUse
-- **tmux reminder**: Suggests tmux for long-running commands (npm, pnpm, yarn, cargo, etc.)
-- **git push review**: Opens Zed for review before push
-- **doc blocker**: Blocks creation of unnecessary .md/.txt files
+## Implemented Hook-Equivalents (This Repo)
 
-### PostToolUse
-- **PR creation**: Logs PR URL and GitHub Actions status
-- **Prettier**: Auto-formats JS/TS files after edit
-- **TypeScript check**: Runs tsc after editing .ts/.tsx files
-- **console.log warning**: Warns about console.log in edited files
+- `.opencode/plugins/claude-hooks-parity.js`
+  - Dev server tmux enforcement (blocks `npm run dev`-style commands outside tmux)
+  - tmux reminder for long-running commands
+  - reminder before `git push`
+  - blocks creation of new random `.md/.txt` files (repo hygiene)
+  - warns when `console.log` appears in edited JS/TS files (via `file.edited`)
+  - logs PR URL after `gh pr create` (via `command.executed`)
 
-### Stop
-- **console.log audit**: Checks all modified files for console.log before session ends
+- `.opencode/plugins/legacy-session-and-compact.js`
+  - session continuity note file under `.opencode/sessions/`
+  - strategic compaction suggestions (tool-call counter under `.opencode/state/`)
+  - injects session notes on `experimental.session.compacting` so compaction keeps continuity
 
-## Auto-Accept Permissions
+- `.opencode/plugins/codex-safety.js`
+  - blocks obviously destructive shell commands (defense-in-depth)
 
-Use with caution:
-- Enable for trusted, well-defined plans
-- Disable for exploratory work
-- Never use dangerously-skip-permissions flag
-- Configure `allowedTools` in `~/.claude.json` instead
+## Permissions (OpenCode)
 
-## TodoWrite Best Practices
+OpenCode permission gating is configured in `opencode.jsonc` under `"permission"`.
+This repo ports Codex-style shell policy into `"permission.bash"` (allow safe reads, ask for remote, deny destructive).
 
-Use TodoWrite tool to:
-- Track progress on multi-step tasks
-- Verify understanding of instructions
-- Enable real-time steering
-- Show granular implementation steps
+## Environment Toggles
 
-Todo list reveals:
-- Out of order steps
-- Missing items
-- Extra unnecessary items
-- Wrong granularity
-- Misinterpreted requirements
+In `.opencode/plugins/claude-hooks-parity.js` you can disable behaviors by setting env vars to `0`:
+
+- `OPENCODE_TMUX_ENFORCE_DEV=0`
+- `OPENCODE_TMUX_WARN_LONG=0`
+- `OPENCODE_BLOCK_RANDOM_DOCS=0`
+- `OPENCODE_WARN_CONSOLE_LOG=0`
