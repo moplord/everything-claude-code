@@ -25,6 +25,10 @@ node_modules/
 .opencode/state/
 .opencode/sessions/
 CHATLOG.ndjson
+codex-history.jsonl
+codex-tui.log
+codex-sessions/
+codex-archived_sessions/
 
 # Personal configs (if any)
 personal/
