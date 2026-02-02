@@ -6,6 +6,13 @@ param(
   [Parameter(Mandatory = $true)]
   [string]$JhipsterVersion,
 
+  # Authentication profile selection:
+  # - oidc: external OIDC provider (e.g. Keycloak)
+  # - local-jwt: built-in JHipster JWT auth (users/roles in DB)
+  [Parameter(Mandatory = $false)]
+  [ValidateSet("oidc", "local-jwt")]
+  [string]$AuthProfile = "oidc",
+
   # Either provide AppJdlPath, or let the script generate a minimal app.jdl from the inputs below.
   [Parameter(Mandatory = $false)]
   [string]$AppJdlPath = "",
@@ -16,6 +23,7 @@ param(
   [Parameter(Mandatory = $false)]
   [string]$PackageName = "",
 
+  # Required only when AuthProfile=oidc (and AppJdlPath is not provided).
   [Parameter(Mandatory = $false)]
   [string]$OidcIssuerUri = "",
 
@@ -58,17 +66,28 @@ function Find-JdlFiles {
 }
 
 function Write-AppJdl {
-  param([string]$path, [string]$baseName, [string]$packageName, [string]$issuerUri, [string]$clientId)
+  param(
+    [string]$path,
+    [string]$baseName,
+    [string]$packageName,
+    [string]$authProfile,
+    [string]$issuerUri,
+    [string]$clientId
+  )
 
   $nl = "`n"
   $t = @()
-  $t += "// Auto-generated application JDL (baseline: monolith + vue + oauth2-oidc + maven + postgresql)"
+  $t += "// Auto-generated application JDL (baseline: monolith + vue + maven + postgresql)"
   $t += "application {"
   $t += "  config {"
   $t += ("    baseName " + $baseName)
   $t += ("    packageName " + $packageName)
   $t += "    applicationType monolith"
-  $t += "    authenticationType oauth2"
+  if ($authProfile -eq "local-jwt") {
+    $t += "    authenticationType jwt"
+  } else {
+    $t += "    authenticationType oauth2"
+  }
   $t += "    databaseType sql"
   $t += "    devDatabaseType postgresql"
   $t += "    prodDatabaseType postgresql"
@@ -77,10 +96,12 @@ function Write-AppJdl {
   $t += "    enableTranslation false"
   $t += "  }"
   $t += "}"
-  $t += ""
-  $t += "// OIDC parameters are recorded for humans/automation; JHipster provider config is done post-generation."
-  $t += ("// issuerUri: " + $issuerUri)
-  $t += ("// clientId: " + $clientId)
+  if ($authProfile -eq "oidc") {
+    $t += ""
+    $t += "// OIDC parameters are recorded for humans/automation; provider wiring is applied post-generation."
+    $t += ("// issuerUri: " + $issuerUri)
+    $t += ("// clientId: " + $clientId)
+  }
 
   Set-Content -NoNewline -Encoding UTF8 -Path $path -Value ($t -join $nl)
 }
@@ -128,12 +149,14 @@ if (-not [string]::IsNullOrWhiteSpace($AppJdlPath)) {
 } else {
   Require-NonEmpty -value $BaseName -name "BaseName"
   Require-NonEmpty -value $PackageName -name "PackageName"
-  Require-NonEmpty -value $OidcIssuerUri -name "OidcIssuerUri"
-  Require-NonEmpty -value $OidcClientId -name "OidcClientId"
+  if ($AuthProfile -eq "oidc") {
+    Require-NonEmpty -value $OidcIssuerUri -name "OidcIssuerUri"
+    Require-NonEmpty -value $OidcClientId -name "OidcClientId"
+  }
 
   $genAppJdl = Join-Path $targetAbs "app.jdl"
   if (-not $DryRun) {
-    Write-AppJdl -path $genAppJdl -baseName $BaseName -packageName $PackageName -issuerUri $OidcIssuerUri -clientId $OidcClientId
+    Write-AppJdl -path $genAppJdl -baseName $BaseName -packageName $PackageName -authProfile $AuthProfile -issuerUri $OidcIssuerUri -clientId $OidcClientId
   } else {
     Write-Host ("DRYRUN: would write app JDL: " + $genAppJdl)
   }

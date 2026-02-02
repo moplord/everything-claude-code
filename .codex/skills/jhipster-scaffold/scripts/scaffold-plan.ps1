@@ -8,11 +8,19 @@ param(
   [Parameter(Mandatory = $true)]
   [string]$PackageName,
 
-  [Parameter(Mandatory = $true)]
-  [string]$OidcIssuerUri,
+  # Authentication profile selection:
+  # - oidc: external OIDC provider (e.g. Keycloak)
+  # - local-jwt: built-in JHipster JWT auth (users/roles in DB)
+  [Parameter(Mandatory = $false)]
+  [ValidateSet("oidc", "local-jwt")]
+  [string]$AuthProfile = "oidc",
 
-  [Parameter(Mandatory = $true)]
-  [string]$OidcClientId
+  # Required only when AuthProfile=oidc.
+  [Parameter(Mandatory = $false)]
+  [string]$OidcIssuerUri = "",
+
+  [Parameter(Mandatory = $false)]
+  [string]$OidcClientId = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -20,6 +28,11 @@ $ErrorActionPreference = "Stop"
 function Ensure-Dir {
   param([string]$p)
   if (!(Test-Path $p)) { New-Item -ItemType Directory -Force -Path $p | Out-Null }
+}
+
+function Require-NonEmpty {
+  param([string]$value, [string]$name)
+  if ([string]::IsNullOrWhiteSpace($value)) { throw ("Missing required input: " + $name) }
 }
 
 function Json-Quote {
@@ -47,7 +60,7 @@ $plan += "## Baseline"
 $plan += ""
 $plan += "- Architecture: monolith"
 $plan += "- Client: Vue3"
-$plan += "- Auth: oauth2-oidc"
+$plan += ("- Auth Profile: " + $AuthProfile)
 $plan += "- Build: Maven"
 $plan += "- Database: PostgreSQL"
 $plan += "- i18n: disabled"
@@ -57,8 +70,16 @@ $plan += "## Required Inputs (Per Project)"
 $plan += ""
 $plan += "- BaseName: $BaseName"
 $plan += "- PackageName: $PackageName"
-$plan += "- OIDC Issuer URI: $OidcIssuerUri"
-$plan += "- OIDC Client ID: $OidcClientId"
+$plan += ("- AuthProfile: " + $AuthProfile)
+if ($AuthProfile -eq "oidc") {
+  Require-NonEmpty -value $OidcIssuerUri -name "OidcIssuerUri"
+  Require-NonEmpty -value $OidcClientId -name "OidcClientId"
+  $plan += "- OIDC Issuer URI: $OidcIssuerUri"
+  $plan += "- OIDC Client ID: $OidcClientId"
+} else {
+  $plan += "- OIDC Issuer URI: (not used)"
+  $plan += "- OIDC Client ID: (not used)"
+}
 $plan += ""
 $plan += "## Next Step (Manual)"
 $plan += ""
@@ -75,13 +96,16 @@ $plan += ""
 Set-Content -NoNewline -Encoding UTF8 -Path (Join-Path $outAbs "JHIPSTER_SCAFFOLD_PLAN.md") -Value ($plan -join "`n")
 
 # Generate a minimal .yo-rc.json stub (fields vary by JHipster version; treat as a parameter record).
+$authType = "oauth2"
+if ($AuthProfile -eq "local-jwt") { $authType = "jwt" }
+
 $yo = @()
 $yo += "{"
 $yo += '  "generator-jhipster": {'
 $yo += '    "baseName": ' + (Json-Quote -s $BaseName) + ','
 $yo += '    "packageName": ' + (Json-Quote -s $PackageName) + ','
 $yo += '    "applicationType": "monolith",'
-$yo += '    "authenticationType": "oauth2",'
+$yo += '    "authenticationType": ' + (Json-Quote -s $authType) + ','
 $yo += '    "databaseType": "sql",'
 $yo += '    "devDatabaseType": "postgresql",'
 $yo += '    "prodDatabaseType": "postgresql",'
@@ -91,10 +115,10 @@ $yo += '    "enableTranslation": false'
 $yo += '  },'
 $yo += '  "codex": {'
 $yo += '    "oidc": {'
-$yo += '      "issuerUri": ' + (Json-Quote -s $OidcIssuerUri) + ','
-$yo += '      "clientId": ' + (Json-Quote -s $OidcClientId)
-$yo += '    }'
-$yo += '  }'
+ $yo += '      "issuerUri": ' + (Json-Quote -s $OidcIssuerUri) + ','
+ $yo += '      "clientId": ' + (Json-Quote -s $OidcClientId)
+ $yo += '    }'
+ $yo += '  }'
 $yo += "}"
 
 Set-Content -NoNewline -Encoding UTF8 -Path (Join-Path $outAbs ".yo-rc.json") -Value ($yo -join "`n")
