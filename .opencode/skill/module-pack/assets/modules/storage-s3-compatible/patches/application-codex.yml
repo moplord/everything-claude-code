@@ -1,0 +1,14 @@
+# S3-compatible storage config (S3 / Aliyun OSS S3-compatible / MinIO).
+# This is a stub. Provider-specific values must be supplied via env or profile overrides.
+
+codex:
+  storage:
+    s3:
+      enabled: false
+      endpoint: ""
+      region: ""
+      bucket: ""
+      accessKeyId: ""
+      secretAccessKey: ""
+      pathStyleAccessEnabled: true
+

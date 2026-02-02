@@ -1,0 +1,6 @@
+{
+  "name": "jobs-spring-scheduler",
+  "description": "Enable a standard scheduled-jobs hook (Spring @Scheduled) with config stub.",
+  "mavenDependencies": []
+}
+

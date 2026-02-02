@@ -1,0 +1,37 @@
+{
+  // Project-level OpenCode config.
+  // Docs: https://opencode.ai/docs
+
+  "$schema": "https://opencode.ai/schema.json",
+
+  // Prefer repository-local instructions.
+  "instructions": [
+    "AGENTS.md",
+    ".opencode/rules/*.md"
+  ],
+
+  // Optional MCP server definitions (placeholders; configure secrets via env vars).
+  // You can also put these in your global OpenCode config and omit them here.
+  "mcp": {
+    "semgrep": {
+      "type": "remote",
+      "url": "https://mcp.semgrep.ai/mcp"
+    },
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "YOUR_CONTEXT7_API_KEY"
+      }
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "command": ["cmd", "/c", "npx", "-y", "chrome-devtools-mcp@latest"]
+    },
+    "ppt": {
+      "type": "local",
+      "command": ["python", "C:\\\\path\\\\to\\\\ppt_mcp_server.py"]
+    }
+  }
+}
+

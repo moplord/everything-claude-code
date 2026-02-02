@@ -1,0 +1,22 @@
+# OIDC (Keycloak) - external authentication provider.
+#
+# Notes:
+# - This is a config stub. Exact property keys can vary by JHipster version.
+# - Prefer driving values via env vars in CI/runtime.
+#
+# Typical Keycloak issuer URI example:
+#   https://keycloak.example.com/realms/<realm>
+
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: ${CODEX_OIDC_ISSUER_URI:}
+        registration:
+          oidc:
+            client-id: ${CODEX_OIDC_CLIENT_ID:}
+            client-secret: ${CODEX_OIDC_CLIENT_SECRET:}
+            scope: openid,profile,email
+

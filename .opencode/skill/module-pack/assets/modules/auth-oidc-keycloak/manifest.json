@@ -1,0 +1,6 @@
+{
+  "name": "auth-oidc-keycloak",
+  "description": "OIDC config stub for external IdP (Keycloak) for JHipster oauth2 projects. Adds config placeholders to application-codex.yml.",
+  "mavenDependencies": []
+}
+

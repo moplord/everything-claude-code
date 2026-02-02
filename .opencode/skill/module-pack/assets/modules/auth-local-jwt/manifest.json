@@ -1,0 +1,6 @@
+{
+  "name": "auth-local-jwt",
+  "description": "Local JWT auth config stub for JHipster jwt projects (users/roles in app DB). Adds JWT settings placeholders to application-codex.yml.",
+  "mavenDependencies": []
+}
+
